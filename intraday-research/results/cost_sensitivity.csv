@@ -1,0 +1,5 @@
+scenario,cost_bps,in_sample_t_gt_2,top50_mean_is_net_bps,top50_mean_oos_net_bps,top50_pct_positive_oos
+zero,0.000,1190,12.896,1.764,80.000
+pre_apr2026,3.840,166,19.256,-1.941,30.000
+base,6.870,61,18.412,-4.964,24.000
+stress,8.640,38,17.224,-6.677,24.000

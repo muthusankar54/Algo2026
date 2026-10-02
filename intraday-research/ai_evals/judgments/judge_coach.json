@@ -1,0 +1,65 @@
+{
+  "judge": "coach",
+  "persona": "Retail trading & behavioural coach",
+  "model_note": "Claude Sonnet 5.5 (claude-sonnet-5-5), single-pass independent judgment from the dossier only; no code or results files were opened and no other judge outputs were consulted.",
+  "scores": {
+    "thesis_fit": {
+      "score": 4,
+      "why": "Going flat overnight does remove gap risk (66% of 2026 daily variance is overnight; 88% of the 50 biggest moves had a same-sign gap), but the dossier also shows overnight carries the return (+374% vs -232% intraday), and VIX is only 12-15 now. A fear-driven narrative is being solved with a different, costlier risk, when simply cutting or hedging holdings would address the same worry."
+    },
+    "edge_evidence": {
+      "score": 2,
+      "why": "Reality Check p=0.97, Deflated Sharpe 0.08, 1 of 61 discoveries held out of sample, and every pre-registered literature strategy is negative after today's 6.9 bps cost. The only structure that persists is a short-side continuation bias that does not survive costs (-5.0 bps hold-out at current cost)."
+    },
+    "cost_feasibility": {
+      "score": 2,
+      "why": "Round trip is about 6.9 bps against best gross edges of 1-4 bps, and costs are ~8% of the median daily range; the April 2026 STT hike nearly doubled the drag from 3.8 bps. Options look cheap in rupees (~Rs 70) but were not backtested, and theta/IV/spread are the real cost there."
+    },
+    "method_rigor": {
+      "score": 4,
+      "why": "Naive pattern discovery is unsound (24,488 trials, ~6 years of data against a 16.6-year minimum backtest length), but the dossier's own toolkit (Reality Check, DSR, PBO, hold-out, placebo) shows it can be made rigorous. A retail builder will rarely apply it with that discipline and will be tempted to keep re-mining after failures."
+    },
+    "risk_control": {
+      "score": 5,
+      "why": "Flat at close eliminates gap risk and defined-risk option buying caps loss per trade. Against that, API orders must be limit-only (stop-limits can fail in fast moves), margin is ~Rs 1.67 lakh per futures lot with no extra intraday leverage, whipsaw on V-reversal days is documented, and risk can still blow up through trade frequency and size escalation."
+    },
+    "regulatory_operational": {
+      "score": 6,
+      "why": "Self-use algos are permitted under the Apr 2026 framework (static IP, daily OAuth+2FA, under 10 orders/sec), so a personal system is feasible if the broker is compliant. Friction is real: limit-only API orders, daily re-login, ITR-3 business-income filing with possible audit, and expiry-settlement rule changes under consultation."
+    },
+    "behavioral_sustainability": {
+      "score": 2,
+      "why": "87.7% of individual F&O traders lost money in FY26, under 1% of day traders are predictably profitable (Barber), and 97% of persistent Brazilian day traders lost. A long-horizon holder moving to daily screen-time, a bear/bull flip-flop discretion, and a losing expectancy invites revenge trading and size escalation after drawdowns."
+    },
+    "nifty_sensex_combination": {
+      "score": 2,
+      "why": "Correlation is ~0.93-0.95, so running the same signal on both gives only ~1-2% Sharpe gain and mostly doubles position size, costs and margin. The Tue/Thu expiry split is the only structural difference, and Sensex data was never available to test it."
+    }
+  },
+  "verdict": "NO_GO",
+  "confidence": 0.8,
+  "p_net_profitable_12m": 0.07,
+  "top_failure_modes": [
+    "Cost drag exceeds gross edge: ~6.9 bps round trip (up from 3.8 bps before the Apr 2026 STT hike) against 1-4 bps of documented gross edge, so even a 'working' signal bleeds money, and overtrading makes it worse.",
+    "Data-mined patterns that do not exist out of sample: with a self-built discovery process the trader will find 'winners' that fail like the 60 of 61 in the hold-out, then keep re-mining after losses (researcher degrees of freedom), and regime shift (2026 war, post-Nov-2024 rules) adds more decay.",
+    "Behavioural blow-up: a fear-driven switch from investing to daily bull/bear F&O trading leads to loss chasing, size escalation, expiry-day option gambling and burning through the capital the investing portfolio took years to build, turning a risk-reduction motive into a higher-risk activity."
+  ],
+  "must_have_conditions": [
+    "At least 6 months and 200 or more trades of forward paper or shadow trading on a frozen, pre-registered rule set (hypothesis count logged, no edits mid-test), using the real broker API with limit-order fills, showing net expectancy of at least +3 bps per trade after 6.9 bps costs with t above 3 (or DSR of at least 0.95).",
+    "Ring-fenced risk capital of no more than 5-10% of net worth, money the family can lose entirely; the long-term portfolio stays untouched or separately hedged; defined-risk instruments only (long options or spreads); no selling naked options or holding positions overnight.",
+    "Hard, automated limits agreed in writing in advance: max trades per day, max daily loss, max monthly drawdown, and a kill-switch; if live net expectancy is negative after the first 60 trades or drawdown hits the preset cap, trading stops and is reviewed for a cooling-off period.",
+    "A cost-aware entry filter, so a trade is only taken when expected move is several times the ~7 bps round-trip cost, with realistic slippage modelled; Nifty only until Sensex is shown to add independent edge.",
+    "Compliance and tax readiness before the first order: SEBI-compliant broker algo set-up (static IP, 2FA), self-use only (no selling signals), a CA engaged for ITR-3 and audit thresholds, and a complete trade journal."
+  ],
+  "best_variant": "Do not replace the investing book with an intraday system. Keep a smaller core, address the macro worry through allocation and cheap hedges (trim equity exposure, add liquid funds/gold, buy index put spreads on Nifty for tail events), and run any systematic idea as a single simple pre-registered Nifty rule in paper trading for 6 months, treating it as an education budget and not an income plan. If real money is ever added, make it one lot, defined-risk options only.",
+  "evidence_that_would_change_verdict": "A pre-registered forward test on 2024-2026 data (post Nov-2024 regime and the 2026 war period) with at least 200 live-fill trades, showing net expectancy of at least +3 bps per trade after full current costs, t above 3 and DSR of at least 0.95, would move this to PILOT_ONLY. Demonstrated defined-risk option or spread execution that cuts all-in cost below ~2 bps with the same edge would also change my view.",
+  "disagreements_with_dossier": [
+    "The 'where risk arrives' section is framed as favourable to intraday, but it does not state that the overnight leg also carries almost all of the return (+374% vs -232% intraday). Staying flat overnight removes gap risk and the equity risk premium together; the dossier lacks the honest counterfactual of hedged or reduced investing versus intraday trading.",
+    "The 66%-of-variance-from-gap figure for 2026 and the 18 shock-day sample (9 of 15 rebounded) are small, war-regime-specific samples; they are suggestive, not evidence of a tradable shock-day rebound, and should not support a bull/bear intraday thesis.",
+    "Missing: the trader's existing investing results and tax position. Investment gains are STCG/LTCG, while F&O is business income at slab rates with audit/compliance costs; this tax and compliance drag is a further hurdle on the intraday side. Also missing are capital size versus lot size (Rs 1.67 lakh margin per futures lot, 65-unit lots), risk of ruin for a typical retail account, and screen time and lifestyle costs.",
+    "Options execution is not backtested, yet options are the most likely retail vehicle. The Rs 70 round-trip figure understates the real cost for option buyers (bid-ask spread, IV crush, theta, expiry-day gamma), and the dossier does not flag this asymmetry.",
+    "The hold-out ends Mar 2024 and uses index prices, not futures prices. The 'short-side continuation' structure that survived directionally (Spearman 0.52) may be a 2015-2024 drift artefact; it is a hypothesis to forward-test, not a result to build on.",
+    "The dossier treats Sensex as a combination question, but Sensex derivatives liquidity, BSE spreads and weekly-option depth are likely worse than Nifty's; with no Sensex intraday data, the combined-index claim is untestable and should default to Nifty only.",
+    "The dossier does not note the mismatch between the stated trigger (war, El Nino) and the market's current pricing (VIX 12-15 in late Sep/1 Oct 2026). Moving to intraday on macro fear while implied volatility is calm is a narrative-driven decision, which is a behavioural red flag in its own right."
+  ]
+}

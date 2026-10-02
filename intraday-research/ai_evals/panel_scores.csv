@@ -1,0 +1,7 @@
+judge,persona,verdict,confidence,p_net_profitable_12m,thesis_fit,edge_evidence,cost_feasibility,method_rigor,risk_control,regulatory_operational,behavioral_sustainability,nifty_sensex_combination
+advocate,Steelman advocate / strategy builder,PILOT_ONLY,0.72,0.18,6,3,4,4,6,7,3,4
+coach,Retail trading & behavioural coach,NO_GO,0.8,0.07,4,2,2,4,5,6,2,2
+compliance,SEBI market-structure & compliance specialist,NO_GO,0.82,0.1,3,2,2,3,5,6,2,3
+macro,Global macro & geopolitical strategist,NO_GO,0.85,0.1,3,2,2,3,5,5,2,2
+quant,Skeptical quant researcher,NO_GO,0.85,0.12,4,2,2,3,5,5,2,2
+risk,Prop desk head of risk,NO_GO,0.8,0.08,4,2,2,4,5,5,2,2

@@ -22,3 +22,9 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# patternlab: downloaded market data (fetch with intraday-research/scripts/fetch_data.sh)
+intraday-research/data/
+__pycache__/
+.pytest_cache/
+intraday-research/results/run_log.txt

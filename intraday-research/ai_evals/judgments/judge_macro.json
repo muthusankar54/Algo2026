@@ -1,0 +1,66 @@
+{
+  "judge": "macro",
+  "persona": "Global macro & geopolitical strategist",
+  "model_note": "Claude Opus 5.5 (claude-opus-5-5). Judged from dossier.md plus results/geopolitical_event_study.csv, yearly_overnight_vs_intraday.csv, hypotheses.csv, gap_open_to_close_by_era.csv and time_of_day_drift.csv. Macro facts in the dossier (Fed, INR, Brent, NOAA) were taken as given, not re-verified.",
+  "scores": {
+    "thesis_fit": {
+      "score": 3,
+      "why": "Being flat at the close does remove the overnight-gap channel, which was 66% of 2026 daily variance. But the 2026 drawdown came mostly from intraday sessions (2026 cumulative: overnight -0.8%, intraday -11.3%), and the war, oil, monsoon, FII and rupee shocks reach Nifty over weeks through CAD, inflation, RBI policy and flows, not through intraday patterns. The switch also gives up the overnight premium (+374% vs -232% log, 2012-2026)."
+    },
+    "edge_evidence": {
+      "score": 2,
+      "why": "None of the 24,488 patterns survives Holm, BH or White's Reality Check (best family-wise p = 0.97). Deflated Sharpe is 0.08 and the hold-out median edge flips from +16.8 to -5.8 bps. The only durable signal is a weak short-side bias (Spearman 0.52), which looks like regime or flow beta rather than a tradeable edge."
+    },
+    "cost_feasibility": {
+      "score": 2,
+      "why": "After the April 2026 STT hike a round trip costs about 6.9 bps, roughly 8% of the median daily range at today's low VIX of 12-15. Every pre-registered strategy grosses only 0.2-5.6 bps and the top-50 hold-out grosses +1.8 bps, so all are negative at today's costs."
+    },
+    "method_rigor": {
+      "score": 3,
+      "why": "A retail trader's own unconstrained pattern search is classic data-snooping: placebo runs produce 17.7 patterns with t > 2, and a minimum backtest of 16.6 years is needed against the ~6 years available. The dossier shows it can be made rigorous (RC/SPA, DSR, PBO, hold-out), but done rigorously it finds nothing, and the minute data stops before the 2024-2026 regime."
+    },
+    "risk_control": {
+      "score": 5,
+      "why": "Exiting by the close removes gap risk, but intraday geopolitical headlines (ceasefire days 2025-05-12 and 2026-04-08, the Hormuz ultimatum on 2026-03-23), V-reversals and late-September whipsaw remain. A system that leans short is exposed to peace-headline squeezes, and limit-only API orders mean stops may not fill in fast markets. Leverage is about 8.7x per Rs 1.67 lakh margined lot."
+    },
+    "regulatory_operational": {
+      "score": 5,
+      "why": "Self-use algos are allowed under the April 2026 SEBI framework, but static IP, daily OAuth+2FA, limit-only API orders, ITR-3 business-income and audit compliance, and a pending SEBI change to expiry settlement add friction and stop-execution risk. Running two exchanges for Nifty and Sensex doubles the operational surface."
+    },
+    "behavioral_sustainability": {
+      "score": 2,
+      "why": "87.7-93% of individual F&O traders lose money, and fewer than 1% of day traders are persistently profitable. A position trader who abandons long-term holdings after a -13% drawdown in favour of daily screen-bound trading with a probably negative expectancy is showing action bias and regime-chasing, which rarely survives the first long drawdown."
+    },
+    "nifty_sensex_combination": {
+      "score": 2,
+      "why": "The true index correlation is about 0.95 and the Sharpe gain is only 1-2%, so in practice it doubles a single bet. Sensex futures on BSE are far less liquid than Nifty futures, which widens slippage, and the only structural difference (Tuesday vs Thursday expiry) showed no directional drift."
+    }
+  },
+  "verdict": "NO_GO",
+  "confidence": 0.85,
+  "p_net_profitable_12m": 0.1,
+  "top_failure_modes": [
+    "Cost bleed: gross edges of 1-5 bps against a round trip of about 6.9 bps (8.6 bps under stress), at low 2026 VIX and narrow ranges, wear the capital down steadily, and overtrading speeds this up.",
+    "Data-snooped patterns: the trader's own search will surface t > 2 patterns that are noise (61 found vs 17.7 in the placebo; the best is indistinguishable from luck) and that decay to negative out of sample, especially because the backtest data ends before the 2024-2026 regime.",
+    "Headline whipsaw with leverage: a system that leans short gets squeezed by intraday ceasefire or peace headlines and V-reversals, limit-only API stops fail to fill in fast markets, and ~9x leverage per minimum lot turns a few bad sessions into a large drawdown. Meanwhile the long-term book, liquidated near a -13% low, misses any recovery."
+  ],
+  "must_have_conditions": [
+    "A strategy written down before testing and validated on Nifty futures minute data (not spot) from after November 2024, including the 2026 war regime. It must be net positive at the 8.6 bps stress cost with Reality Check/SPA p < 0.05, Deflated Sharpe >= 0.95 and PBO <= 0.05.",
+    "At least 3-6 months of shadow trading through the SEBI-compliant API with logged limit-order fills, showing realised slippage no worse than assumed and positive net P&L, before any real capital is used.",
+    "Ring-fenced risk capital of at most 10% of investable wealth, a maximum of 1 Nifty lot, a daily loss cap of about 1% of the trading sleeve, flat by 15:20, and a hard kill switch at a 15% drawdown of the sleeve, with no averaging down.",
+    "A no-trade calendar (RBI on 7 October, Fed, CPI, OPEC, expiry days, announced ultimatum or ceasefire deadlines), with Nifty only and no Sensex until an edge is proven.",
+    "The long-term portfolio decision (resize or hedge) is made separately, on macro grounds, and is not financed by liquidating holdings for this experiment."
+  ],
+  "best_variant": "Keep a resized core of long-horizon holdings and hedge the geopolitical tail directly. India VIX at 12-15 makes Nifty puts and put spreads cheap. Use a partial short-futures overlay around known event windows and tilt sectors along the oil, rupee and monsoon channels (exporters over oil-sensitive importers). If the trader wants something systematic, run it at a daily or weekly horizon (trend and drawdown-control overlay with VIX and FII-flow filters), where costs are a small fraction of the move.",
+  "evidence_that_would_change_verdict": "This would change if a strategy written down before testing, run on post-2024 Nifty futures minute data that includes the 2026 war regime, cleared stress costs with family-wise significance (RC/SPA p < 0.05, DSR >= 0.95), and then held up in 6 months of live shadow trading with realised slippage. Evidence that cheap tail hedges were unavailable or ineffective for the core book would also strengthen the case for going flat overnight.",
+  "disagreements_with_dossier": [
+    "The dossier never tests the trader's premise against simpler ways of managing macro risk: reducing gross exposure, protective puts or collars, a futures hedge overlay, or sector rotation along the oil, rupee and monsoon channels. The proposal mixes up risk reduction with alpha generation.",
+    "It highlights that 66% of 2026 variance came from gaps but does not point out that the 2026 drawdown itself came mostly intraday (overnight -0.8% vs intraday -11.3% cumulative). Being flat overnight would not have protected a long-only holder this year; most of the gap variance was noise that mean-reverted (9 of 15 negative-gap shock days rebounded).",
+    "The overnight/intraday split is computed on the spot index, and the stale 09:15 opening print moves return from the intraday side to the overnight side. The overnight premium (+374%) and the intraday loss (-232%) are therefore overstated in size; a futures-based split is needed.",
+    "Calling the persistent short-side bias 'structure' is too strong without checking whether those patterns beat a naive 'short every day 09:30-15:15' benchmark or are just beta to FII-selling regimes (2015-2020 and 2026). That flow is better captured at a daily horizon.",
+    "It leaves out that Sensex futures on BSE are illiquid compared with Nifty futures (BSE volume is mostly options), so a combined futures plan carries much higher slippage on the Sensex leg; correlation measured from an ETF proxy does not capture this.",
+    "It underplays geopolitical risk during Indian trading hours: Middle East events and ceasefire or ultimatum headlines often arrive during IST hours, so intraday trading does not remove the tail, and a system that leans short has a large upside-squeeze tail.",
+    "It does not say that selling long-term holdings near a -13% YTD low crystallises losses and capital-gains tax effects and gives up the historical post-shock recovery of Indian indices (Balakot, Ukraine 2022 and the 2025 tariff shock all retraced within months).",
+    "The Fed 'hike' to 3.75-4.00% on 16 Sep 2026 is a sharp reversal of the 2025 easing path and a key driver of FII flows and INR at 96. It should be source-checked, because the macro framing depends on it."
+  ]
+}

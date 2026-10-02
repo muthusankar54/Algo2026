@@ -1,0 +1,66 @@
+{
+  "judge": "quant",
+  "persona": "Skeptical quant researcher",
+  "model_note": "Claude Opus 5.5 (claude-opus-5-5). Scored from the dossier plus a skim of patternlab/stats.py, discovery.py, costs.py, run_all.py and results/*.csv/summary.json. No other judges' outputs consulted.",
+  "scores": {
+    "thesis_fit": {
+      "score": 4,
+      "why": "Being flat overnight does remove gap risk, which is 66% of 2026 daily variance, and 88% of the 50 largest moves had a gap of the same sign. But it gives up the long-horizon/overnight premium. And 2026 YTD the mean loss came intraday (-11.3% log) not overnight (-0.8%), so the stated macro risk is better handled by cutting exposure or hedging than by a new trading business. Some of the cited threats are also stale: the India-China thaw, and VIX back at 12-15."
+    },
+    "edge_evidence": {
+      "score": 2,
+      "why": "Across 24,488 mined patterns, none survives Holm/BH, Reality Check or Deflated Sharpe, and the 61 t>2 'discoveries' went from +16.8 to -5.8 bps median out of sample (1/61 with hold-out t>2, about what chance gives). Every pre-registered literature rule is negative net of cost in both periods. The only real structure is a weak short-side intraday drift: the top-50 earn +1.8 bps gross in the hold-out against a 6.9 bps cost."
+    },
+    "cost_feasibility": {
+      "score": 2,
+      "why": "A round trip costs ~6.9 bps, ~5 bps of it STT that cannot be avoided, and that is ~8% of the median daily range. The best gross edge found anywhere (ORB-30, +4.3 to +5.6 bps) is below it, and the top mined patterns flip from +1.8 to -5.0 bps at today's cost. Limit-only API orders swap slippage for non-fill/adverse-selection risk, and options are not a cost escape: spreads, theta and the variance-risk premium for buyers are untested."
+    },
+    "method_rigor": {
+      "score": 3,
+      "why": "Exhaustive pattern discovery is the textbook overfitting recipe. The dossier's own rigorous version (Reality Check, placebo, PBO, untouched hold-out) shows it picks noise. It can be made statistically sound only by shrinking to a few pre-registered, economically motivated hypotheses tested walk-forward on futures data. At intraday frequency with ~250 days/yr that version has low power and, so far, nothing to find."
+    },
+    "risk_control": {
+      "score": 5,
+      "why": "Being flat by close and using hard daily loss limits written in code genuinely cap overnight gap exposure. But ~8.7x futures leverage (Rs 1.67 lakh margin vs Rs 14.6 lakh notional), headline-driven intraday whipsaws (V-reversals on 9 of 15 negative-gap shock days, continuation on 2026-03-23) and limit-only API stops that may not fill in fast markets leave real intraday tail risk. Two weekly expiries (Tue/Thu) add gamma and manipulation exposure if options are used."
+    },
+    "regulatory_operational": {
+      "score": 5,
+      "why": "Self-use algos under 10 orders/sec are allowed with a static IP and a daily OAuth+2FA login, and no RA registration is needed for own use, so it is feasible. But limit-only API orders complicate stop-losses, BSE (Sensex) needs a separate integration, expiry/settlement rules are still changing (SEBI consultation to 3 Oct), and F&O business income brings ITR-3 and possible audit. A solo trader must also watch the system every session."
+    },
+    "behavioral_sustainability": {
+      "score": 2,
+      "why": "The base rates are brutal: 87.7-93% of individual F&O traders lose, fewer than 1% of Taiwanese day traders are predictably profitable, and 97% of persistent Brazilian day traders lost. A system with negative expected net edge produces a steady bleed, which invites overrides, larger size, re-mining after each drawdown and a drift into cheap options. Moving from multi-week holding to intraday also demands a lot of screen time."
+    },
+    "nifty_sensex_combination": {
+      "score": 2,
+      "why": "The true index correlation is ~0.95+ and same-signal diversification adds only ~1-2% to Sharpe, so running both mostly doubles size and costs. Sensex derivatives have thinner books and there is no Sensex intraday data to backtest. The only structural difference, separate Tue/Thu expiries, is a source of gamma risk rather than edge."
+    }
+  },
+  "verdict": "NO_GO",
+  "confidence": 0.85,
+  "p_net_profitable_12m": 0.12,
+  "top_failure_modes": [
+    "Cost drag: a round-trip cost of ~6.9 bps (mostly STT) exceeds every gross intraday edge measured out of sample (top-50 mined +1.8 bps; best literature rule +4.3 bps), so the system bleeds slowly but almost certainly, and that shows up only after months of noise-dominated P&L.",
+    "Data-mining and regime fragility: the patterns found are noise (best t 3.27 is below the noise max-t; 61 discoveries end with a median of -5.8 bps in the hold-out). The persistent 'short continuation' bias is a small, regime-dependent post-09:30 drift that may flip. The trader will keep re-mining after each drawdown, and none of that iterative snooping is counted in any correction.",
+    "Execution and behaviour under stress: limit-only API orders miss stops and fills on headline spikes. Then comes the slide into weekly options (theta/VRP, Tue+Thu expiry gamma), more leverage and discretionary overrides, the path behind the 88-93% retail F&O loss rates."
+  ],
+  "must_have_conditions": [
+    "At most ~5-10 economically motivated hypotheses are pre-registered and frozen before testing, with every trial logged. Each must pass a family-wise test (Romano-Wolf/SPA at 5%), reach a Deflated Sharpe of at least 0.95 on the honest trial count, and show PBO below 0.1.",
+    "Validation on actual Nifty (and Sensex, if used) futures/options 1-minute data from Apr 2024 to Sep 2026, never used in design, at current costs: a net edge with t>2 and gross edge per trade at least 2x round-trip cost (~14 bps or more).",
+    "3-6 months of shadow/paper trading through the real broker API (limit-only orders, static IP, daily login), measuring realised slippage, fill rate and missed stops, with live per-trade results inside the backtest's confidence band before any capital is committed.",
+    "Hard risk limits enforced in code and at the broker: 1 lot per index at most (or under 0.5% of capital at risk per trade), daily loss stop around 1%, kill switch at about 5% drawdown or if the live mean falls below cost breakeven after a pre-set trade count, flat by 15:15, no option selling, no expiry-day trades at first.",
+    "Risk capital capped at about 10% of investable assets or less, with the core portfolio's geopolitical risk handled separately by de-risking or hedging, not by this system."
+  ],
+  "best_variant": "Address the geopolitical risk where it lives, at the portfolio level. Keep a reduced core long-horizon allocation (the data say returns accrue overnight/long-horizon) and cap gap losses with index put spreads or collars or partial short Nifty futures hedges in high-risk windows, plus diversifiers (gold, short-duration debt). If intraday research continues, limit it to one pre-registered, low-frequency, volatility-conditioned Nifty-futures-only hypothesis, paper-traded on post-2024 data.",
+  "evidence_that_would_change_verdict": "A strategy pre-registered before seeing Apr 2024-Sep 2026 Nifty futures minute data that shows net-of-current-cost t>3 with gross edge at least 2x cost on that data, followed by 6 months of live paper trading with limit-only fills close to the backtest. That would move the verdict to PILOT_ONLY at small size.",
+  "disagreements_with_dossier": [
+    "The Reality Check p=0.97 is probably too conservative, so it should not be the headline number. Bootstrap means are studentised with the full-sample SE while resamples are admitted with as few as half the trades, which inflates the null max-t: bootstrap median 3.9 against a placebo max-t p95 of 3.38. The placebo percentile (0.91, i.e. family-wise p of about 0.09 for the best pattern) is the better-calibrated figure. The conclusion is unchanged.",
+    "The DSR (0.08) and MinBTL (16.6 years) use the nominal 24,488 trials. The candidates are highly correlated (nested windows, overlapping conditions, long/short mirrors), so the effective number of trials is far smaller and these figures overstate severity. The hold-out decay is the stronger evidence.",
+    "The Spearman 0.52 IS/OOS persistence is mostly one common factor, the negative post-09:30 intraday drift that favours shorts, not many independent persistent patterns. That drift is ~2-3 bps/day, far below cost, and regime-dependent.",
+    "The overnight +374% vs intraday -232% decomposition is heavily contaminated by the untradeable 09:15 open print (-6.8 bps/day, about -95 log-% over 2015-20 alone), so it overstates the overnight/intraday asymmetry. Also, in 2026 YTD the mean loss came intraday (-11.3%), not overnight (-0.8%), so being flat overnight cuts gap variance but would not have avoided this year's drawdown for a long holder.",
+    "The evidence comes from index prices, not futures, and ends Mar 2024. The live regime (post-Nov-2024 F&O changes, Tuesday expiries, STT hike, the war period) has no intraday test at all. The in-sample includes the 2020 COVID crash, which likely drives the short-continuation patterns (best pattern: 63 trades, kurtosis 4.1), and there is no leave-crash-out robustness check.",
+    "The ~Rs 70 (1.1 point) options round trip understates the true cost of options execution: it leaves out bid-ask spread, adverse selection under limit-only orders, and the theta/variance-risk-premium drag on buyers. Options are untested and should not be read as a way around futures costs.",
+    "The 18 geopolitical event days are picked in hindsight. The 9/15 intraday rebounds after negative gaps contradict the mined short-continuation patterns, and the sample is far too small to trade on.",
+    "Missing: the obvious counterfactual of hedging or de-risking the existing portfolio, the trader's capital, time budget and size relative to lot size, and Sensex derivatives liquidity/spread data."
+  ]
+}

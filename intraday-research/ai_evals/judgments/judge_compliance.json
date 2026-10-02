@@ -1,0 +1,65 @@
+{
+  "judge": "compliance",
+  "persona": "SEBI market-structure & compliance specialist",
+  "model_note": "Claude (Fable 5.1, claude-fable-5-1). Judged from the dossier; cross-checked the headline numbers against results/summary.json, cost_sensitivity.csv, hypotheses.csv, top_patterns_in_sample.csv and patternlab/costs.py (they match). Knowledge cutoff June 2026, so Aug-Oct 2026 regulatory items (closing auction go-live, expiry settlement consultation, exact algo-framework milestones) are taken from the dossier and flagged where I could not verify them independently.",
+  "scores": {
+    "thesis_fit": {
+      "score": 3,
+      "why": "Going flat overnight does remove the gap risk the trader fears (66% of 2026 daily variance is overnight; 88% of the 50 largest moves had a same-sign gap), but the dossier's own decomposition shows the overnight leg is where all compensated return lives (+374% overnight vs -232% intraday cumulative log, 2012-2026). The proposal swaps a positively-drifting risk premium for a negatively-drifting, cost-laden session, and shock days themselves whipsaw intraday (9 of 15 negative-gap event days rebounded; 2026-03-23 continued down), so the stated macro risk is better handled by beta reduction or index puts than by day trading."
+    },
+    "edge_evidence": {
+      "score": 2,
+      "why": "24,488 mined patterns produced 0 survivors under Holm/BH, Reality Check FWER p of the best pattern = 0.97, Deflated Sharpe 0.08 vs 0.95 required, and hold-out median edge fell from +16.8 to -5.8 bps/trade with only 21% of discoveries staying profitable. All six pre-registered literature strategies (intraday momentum, ORB-15/30, gap fade/go) are gross-positive at best by 1-6 bps and net-negative in both periods; even at zero cost the top-50 hold-out mean is only +1.8 bps."
+    },
+    "cost_feasibility": {
+      "score": 2,
+      "why": "The Rs 874 (~6.9 bps) futures round trip is ~8% of the median daily Nifty range and roughly 1.5-3x the largest credible gross intraday edges in the literature (2.6 bps Gao et al.; 4-6 bps ORB gross here); the Apr-2026 STT hike alone flipped the top-50 patterns from -1.9 to -5.0 bps net. The cost model is fair (Rs 20 brokerage, 0.05% sell-side STT, 1 pt slippage/side) and the regulatory trend (STT up 2.5x in two years, Nov-2024 and 2025 F&O curbs) points to costs rising, not falling; options execution lowers statutory charges per unit delta but adds spread, theta and gamma that the dossier did not backtest."
+    },
+    "method_rigor": {
+      "score": 3,
+      "why": "Pattern discovery as the trader describes it (mine conjunctions of indicators, trade the winners) is exactly the data-snooping exercise the dossier shows fails: real max-t 3.27 vs bootstrap null median 3.9, placebo 95th-pct best-t 3.38, PBO 0.21, and a required minimum backtest length of 16.6 years for 24,488 trials against ~6 years available. It can be made sound only by collapsing to a handful of pre-registered, economically-motivated hypotheses with Reality Check/SPA and DSR gates on futures prices covering the post-Nov-2024 and 2026 regimes, and the dossier's 5b shows that when that is done, nothing clears costs."
+    },
+    "risk_control": {
+      "score": 5,
+      "why": "Mandatory flat-by-close removes gap/overnight tail risk and positions are bounded by time stops, which is genuinely better than holding equities into a Hormuz headline. But the instrument is ~8.7x levered (Rs 14.6 lakh notional on Rs 1.67 lakh margin, so a 1% adverse session is ~9% of margin per lot), 95% of discovered patterns are short-biased and get run over on the gap-down-then-rebound days that dominate the 2026 event study, late-Sep-2026 shows trend days and V-reversals, and operational tails (broker/API outage mid-position, peak-margin shortfall penalties, broker RMS auto-square-off at 15:20) are not addressed."
+    },
+    "regulatory_operational": {
+      "score": 6,
+      "why": "A self-built, own-account algo at a few orders per day sits comfortably inside the SEBI retail-algo framework (<10 orders/sec, no exchange registration, static IP, daily OAuth+2FA, no RA licence needed as long as nothing is sold), and ITR-3 business-income treatment with loss carry-forward is routine. The operational load is real though: static-IP VPS or ISP, daily TOTP login automation, order tagging per broker, marketable-limit handling of time-based exits (the dossier says API orders must be limit orders), turnover tracking for audit thresholds, and ongoing exposure to SEBI changing the rules mid-flight (expiry settlement methodology consultation, closing auction, possible further STT/lot changes)."
+    },
+    "behavioral_sustainability": {
+      "score": 2,
+      "why": "The decision is fear-driven (El Nino, Iran, Ukraine, China) rather than edge-driven, and the trader would move from a passive holding habit to 6 hours/day of screen time running a system whose measured expectancy is about -5 bps/trade (roughly -Rs 70 plus Rs 874 of charges per lot per round trip). SEBI's own data (87.7-93% of individual F&O traders losing; Rs 25,000 cr/yr paid in costs) and Chague et al. (97% of persistent day traders lose) describe exactly this cohort; a random-walk-with-negative-drift equity curve is psychologically corrosive and is usually abandoned after the first drawdown or, worse, sized up."
+    },
+    "nifty_sensex_combination": {
+      "score": 3,
+      "why": "Daily correlation is 0.93 against an ETF proxy (true index ~0.95+), so running one signal on both yields a ~1-2% Sharpe gain and otherwise just doubles notional; it is leverage, not diversification. The only structural value is access to two weekly expiry days (Nifty Tue, Sensex Thu), but the dossier finds no directional drift on expiry days and had no Sensex intraday data at all; in practice BSE liquidity is in Sensex options near expiry while Sensex futures are thin, so the 'combined futures' leg is not symmetrically tradeable."
+    }
+  },
+  "verdict": "NO_GO",
+  "confidence": 0.82,
+  "p_net_profitable_12m": 0.1,
+  "top_failure_modes": [
+    "Cost bleed with no edge: a 6.9 bps round trip (Rs 874/lot, ~8% of the median daily range) against gross intraday edges of 0-6 bps produces a steady negative drift of about -5 bps per trade out of sample; at 1-2 trades/day on 2 lots this is tens of thousands of rupees a month in charges alone before any market loss.",
+    "Deploying noise: mined patterns that look strong in-sample (t up to 3.27) are indistinguishable from luck (Reality Check p 0.97, DSR 0.08) and revert out of sample (median +16.8 to -5.8 bps); the data also ends Mar 2024, before the Nov-2024 F&O curbs, the Tuesday expiry move, the Apr-2026 STT hike, the closing auction and the 2026 war regime, so live behaviour will differ from the backtest.",
+    "Leverage plus shock-day whipsaw plus rule drift: ~8.7x notional leverage, short-biased patterns run over on gap-down-then-rebound days (9 of 15 negative-gap event days), V-reversal sessions, API/broker outages mid-position, and SEBI/Budget changes (further STT, lot, expiry-settlement or margin changes) that can erase a thin edge overnight."
+  ],
+  "must_have_conditions": [
+    "Replace open-ended mining with a pre-registered set of at most ~10 economically motivated hypotheses, tested on Nifty FUTURES prices (not spot) including 2024-2026 data, charged at today's full cost model with realistic slippage, and passing Reality Check/SPA FWER p < 0.05, Deflated Sharpe >= 0.95 and PBO < 0.05 on an untouched hold-out.",
+    "At least 6 months of forward paper trading through the actual broker API (limit orders, real quotes, logged fills and rejects) showing net-positive P&L after all charges with t > 2 versus zero before a single live lot.",
+    "Live only at 1 lot per Rs 10 lakh of allocated capital, allocated capital capped at 10-15% of net worth, hard daily loss limit (~1% of allocated capital), max 2 round trips per day, auto-flat by 15:15, and an automatic kill switch on data/API failure or margin shortfall.",
+    "Full compliance baseline documented before go-live: own/family account only, < 10 orders/sec, whitelisted static IP, daily OAuth+TOTP login, algo tagging as the broker requires, no sharing or selling of signals (else SEBI RA registration), and ITR-3 bookkeeping with turnover tracking for tax-audit thresholds.",
+    "Sensex leg permitted only in instruments with demonstrated liquidity at the intended entry/exit times (spread and depth checks logged; Sensex futures excluded unless spread <= 2 ticks), and only after the strategy has been validated on actual Sensex intraday data; otherwise trade Nifty only."
+  ],
+  "best_variant": "Do not convert the portfolio into a day-trading operation. Keep the long-horizon equity book (where the +374% overnight return has come from) and hedge the geopolitical gap risk directly and cheaply: cut beta to a comfortable level, hold more cash, or buy monthly Nifty puts / a collar sized to the drawdown the trader cannot stomach. If intraday work is still wanted, run it as an unfunded research project: 3-5 pre-registered event-conditioned hypotheses (e.g. behaviour after >= 2% shock gaps) executed in ATM Nifty options to cut statutory cost, forward-tested on paper for 6 months before any capital."
+  ,
+  "evidence_that_would_change_verdict": "A pre-registered strategy on Nifty futures prices covering 2024-2026 that stays net-positive after the 6.9 bps base cost with Reality Check FWER p < 0.05 and Deflated Sharpe >= 0.95, confirmed by 6 months of logged live-API paper fills. Alternatively a demonstrated all-in cost (including real option spreads and theta) below ~3 bps per round trip while gross edge stays >= 5 bps.",
+  "disagreements_with_dossier": [
+    "Sensex liquidity asymmetry is missing: BSE index-derivative volume is overwhelmingly in Sensex options and concentrated around the Thursday expiry; Sensex futures are thin and off-expiry option spreads are wider than Nifty's. 'Nifty and Sensex combined (index futures/options)' is therefore not a symmetric two-leg system, and the 1-2% diversification figure overstates practical value because the Sensex leg will carry higher slippage than the 1 point/side assumed for Nifty.",
+    "Options execution is the one cost lever the dossier leaves unquantified: STT on options is charged on premium, not notional, so statutory charges per unit of delta exposure are several times lower than futures (the ~Rs 70 figure), but the dossier's 'ATM weekly option round trip ~Rs 70' omits bid-ask spread, theta over a multi-hour hold and gamma on expiry days. The net effect on an intraday directional strategy is untested and should not be assumed in either direction.",
+    "Backtests use index spot prices while the trade is in futures: futures basis moves, roll days, and the fact that futures trade continuously from 09:15 while the spot opening print is a stale-constituent artefact mean opening-window entries and the 15:15 exits will fill differently from the spot series; results near the open should be treated as more uncertain than the dossier implies.",
+    "The closing auction session (live since 3 Aug 2026 per the dossier) and the pending expiry-settlement-methodology change are noted but not analysed; several top mined patterns exit at 15:15 and the whole last-30-minute literature is about pre-CAS microstructure, so late-session behaviour in the backtest may not represent today's market.",
+    "Two regulatory details should be verified before being relied on: SEBI's retail-algo circular (Feb 2025) came into force in 2025 as far as I know, so 'in force for all brokers since 1 Apr 2026' may refer to a later broker-level milestone; and 'limit orders only for API orders' reads like a broker/exchange implementation standard rather than a SEBI-level mandate. Neither changes the verdict, but the operational design (marketable limit orders for time-based exits) should follow the broker's actual rulebook.",
+    "Operational cost items absent from the cost model and risk discussion: peak-margin shortfall penalties, broker auto-square-off charges and RMS cut-off times (~15:20), API/data-feed subscription fees, and intraday MTM calls; individually small, but for a 1-2 lot trader they are the same order of magnitude as the hoped-for edge."
+  ]
+}

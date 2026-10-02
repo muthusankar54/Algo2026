@@ -1,0 +1,64 @@
+{
+  "judge": "risk",
+  "persona": "Prop desk head of risk",
+  "model_note": "Claude Sonnet 5.5 acting as an independent LLM-as-judge; scored from dossier.md only (code and results not re-run); own market-structure knowledge used for operational and microstructure points.",
+  "scores": {
+    "thesis_fit": {
+      "score": 4,
+      "why": "Going flat overnight does remove gap risk (66% of 2026 daily variance is overnight), but the same data show 9 of 15 negative-gap shock days rebounded intraday and the stated problem is a portfolio-level macro risk that is better handled by sizing or hedging than by becoming a day trader. It also gives up the overnight return premium (+374% overnight vs -232% intraday since 2012)."
+    },
+    "edge_evidence": {
+      "score": 2,
+      "why": "White's Reality Check best-pattern p = 0.97, Deflated Sharpe 0.08, hold-out median edge -5.8 bps, 1 of 61 discoveries replicated, and every pre-registered literature strategy (best gross +4.3 bps) is negative after 6.9 bps cost. The only residual is a small, short-biased directional structure (Spearman 0.52) that is not harvestable."
+    },
+    "cost_feasibility": {
+      "score": 2,
+      "why": "Top-50 hold-out mean is +1.8 bps at zero cost versus a 6.9 bps futures round trip (13.5 points of charges alone, about 8% of the median daily range). Options cost looks cheap in charges (about 1.1 points) but spread, theta and limit-only fill uncertainty were not tested."
+    },
+    "method_rigor": {
+      "score": 4,
+      "why": "Unconstrained pattern discovery by a retail trader is the textbook data-snooping setup (24,488 trials, minimum backtest length 16.6 years vs about 6 available), but the dossier's pipeline (RC, DSR, PBO, placebo, untouched hold-out) shows it can be done soundly. A retail user is unlikely to replicate that discipline, and the data stop at Mar 2024."
+    },
+    "risk_control": {
+      "score": 5,
+      "why": "Flat-by-close does eliminate overnight gaps, and defined-risk long options cap loss per trade. Offsetting this: limit-only API orders mean stops can fail to fill on gap-throughs, 2026 regime shows trend days and V-reversals that whipsaw directional rules, and futures margin of about Rs 1.67 lakh per lot makes sizing errors costly."
+    },
+    "regulatory_operational": {
+      "score": 5,
+      "why": "Self-use algos are permitted under the Apr 2026 SEBI retail framework (under 10 orders per second, static IP, daily OAuth and 2FA), and the throughput needs are trivial. Friction comes from limit-only orders, daily re-login failures, ITR-3 and audit obligations, the pending expiry-settlement rule change, and the closing auction, with no Sensex intraday data to build on."
+    },
+    "behavioral_sustainability": {
+      "score": 2,
+      "why": "87.7% of F&O traders lost money in FY26 and fewer than 1% of day traders are predictably profitable (Barber et al.). The trigger for the switch is a macro-narrative fear (El Nino, wars) rather than a measured edge, and a system with no demonstrated edge will produce long losing streaks that a retail trader will override."
+    },
+    "nifty_sensex_combination": {
+      "score": 2,
+      "why": "Index correlation is about 0.95 and the Sharpe diversification gain is only 1-2%, so the combination mostly doubles exposure and costs. Different expiry days (Tue vs Thu) are the only structural difference, and BSE liquidity and spreads are an untested additional cost."
+    }
+  },
+  "verdict": "NO_GO",
+  "confidence": 0.8,
+  "p_net_profitable_12m": 0.08,
+  "top_failure_modes": [
+    "No net-of-cost edge: gross edges of 0-4 bps per trade cannot clear a 6.9 bps round trip (8.6 bps under stress), so the account bleeds steadily through STT, brokerage and slippage while the trader keeps refitting patterns that are noise (hold-out 1 of 61 survived).",
+    "Overfit pattern discovery redeployed into a different regime: parameters mined on 2015-2024 data, then traded in a 2026 war/El Nino regime with a 66% overnight variance share, producing whipsaw losses and drawdown that triggers behavioural overrides (revenge trading, size-up, averaging).",
+    "Execution and sizing failures: limit-only API orders that do not fill on stop-throughs or gap-through opens, doubled Nifty plus Sensex exposure on 0.95-correlated signals, and futures leverage with one-lot margin of about Rs 1.67 lakh, so one bad session can breach a retail drawdown limit."
+  ],
+  "must_have_conditions": [
+    "A single pre-registered hypothesis (or a very small frozen set), tested on genuinely out-of-sample data from Apr 2024 onward with real futures/options bid-ask and post-Apr-2026 costs, showing net expectancy of at least about +3 bps per trade after the 6.9 bps base cost and still positive at 8.6 bps stress, with White RC or SPA p below 0.05 and Deflated Sharpe at least 0.95.",
+    "At least 60 trading sessions of forward paper or minimum-size trading that models limit-only fills (including missed fills and stop-limit failures), with realised slippage no worse than assumed and results inside the backtest confidence band.",
+    "Ring-fenced risk capital of no more than 5-10% of net worth, max loss per day of 0.5-1% of that capital, no overnight positions (auto square-off by about 15:15), defined-risk structures (long options or spreads) preferred over naked futures, and a hard kill-switch at a pre-set weekly and monthly drawdown with no discretionary override.",
+    "Nifty only until Sensex intraday data and BSE liquidity are shown to add value; no doubling of the same signal across both indices.",
+    "Operational readiness confirmed: static IP, daily login automation with alerts, position reconciliation, SEBI retail-algo compliance for self-use only, and ITR-3 or audit set-up for F&O business income."
+  ],
+  "best_variant": "Do not convert the portfolio into a discovery-driven day-trading book; address the macro worry at portfolio level by cutting size and buying defined-risk index puts or put spreads on the existing holdings (low VIX of 12-15 makes protection cheap). If the trader still wants intraday, paper trade one pre-registered Nifty-only rule (e.g. ORB-30 with a stop or short-continuation after a down open), expressed with long options for defined risk, at minimum size for at least three months with explicit kill criteria.",
+  "evidence_that_would_change_verdict": "A frozen rule that shows positive net expectancy of roughly 3+ bps per trade on post-Apr-2024 futures/options data with real spreads and Apr-2026 costs, passes RC/SPA and DSR, and then holds up over about 60 forward sessions with realised fills at or better than modelled would move me to PILOT_ONLY or CONDITIONAL_GO.",
+  "disagreements_with_dossier": [
+    "The dossier tests an index-price proxy with fixed-time exits and 1 point of slippage per side; it does not model limit-only fill risk (missed winners, stop-limit failures), which under the SEBI API rules is a real hidden cost and a tail-risk issue, not just a friction.",
+    "The overnight-versus-intraday result (+374% overnight, -232% intraday) is presented as a risk-location fact, but the practical implication is that flat-overnight trading structurally surrenders the index return premium; part of the intraday drag is the untradeable 09:15 print, so the case against intraday long exposure is partly overstated, but the case for any edge is not improved.",
+    "The thesis itself is not tested against simpler alternatives (reduce size, hedge with index puts, hold cash); the dossier evaluates intraday pattern trading on its merits but not whether it answers the stated macro risk better than hedging, which is the first question a risk desk would ask.",
+    "The hold-out (2021-2024) is mostly a bull-market regime and the data end Mar 2024, so the short-side bias that persists (95% of t>2 discoveries are shorts) may behave differently in the 2026 bear/war regime; the dossier flags the limitation but does not say that regime-conditional shorts remain the single open hypothesis worth pre-registering and testing forward.",
+    "The shock-day sample (18 days, 15 negative gaps, 9 rebounds) is too small to support any inference; no risk-of-ruin, drawdown or Monte Carlo sizing analysis is provided for a retail account with one-lot margin of about Rs 1.67 lakh.",
+    "Options-based execution is not backtested, yet it is the most likely retail implementation (cheap charges, defined risk); spread, theta and implied-vs-realised vol costs may exceed the apparent Rs 70 round-trip charge, so the 'about 1.1 option points' cost figure should not be read as evidence of feasibility."
+  ]
+}

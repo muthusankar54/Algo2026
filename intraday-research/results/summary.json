@@ -1,0 +1,158 @@
+{
+  "data": {
+    "minute_days_total": 2261,
+    "eligible_days": 2213,
+    "in_sample_days": 1417,
+    "hold_out_days": 796,
+    "in_sample": [
+      "2015-03-17",
+      "2020-12-31"
+    ],
+    "hold_out": [
+      "2021-01-01",
+      "2024-03-26"
+    ],
+    "daily_last_date": "2026-09-25"
+  },
+  "costs_bps_round_trip": {
+    "zero": 0.0,
+    "pre_apr2026": 3.84,
+    "base": 6.87,
+    "stress": 8.64
+  },
+  "discovery": {
+    "candidates_tested": 24488,
+    "naive_t_gt_2": 61,
+    "naive_t_gt_2_and_win_gt_55pct": 51,
+    "t_gt_3": 4,
+    "bh_fdr_q_lt_0.10": 0,
+    "holm_p_lt_0.05": 0,
+    "max_t": 3.273639812744861
+  },
+  "reality_check": {
+    "n_boot": 500,
+    "max_t_boot_p50": 3.944984288281964,
+    "max_t_boot_p95": 4.981771325415664,
+    "observed_max_t": 3.273639812744861,
+    "fwer_p_of_best": 0.9680638722554891,
+    "patterns_with_fwer_p_lt_0.05": 0
+  },
+  "spa": {
+    "n_boot": 500,
+    "max_t_null_p50": 3.7799547350993423,
+    "max_t_null_p95": 4.8968965141685805,
+    "spa_p_of_best": 0.8762475049900199,
+    "patterns_with_spa_p_lt_0.05": 0
+  },
+  "placebo": {
+    "n_runs": 100,
+    "naive_t_gt_2_mean": 17.7,
+    "naive_t_gt_2_p95": 42.099999999999994,
+    "t_gt_3_mean": 0.41,
+    "max_t_mean": 2.806175609977976,
+    "max_t_p95": 3.3762455344677416,
+    "real_naive_t_gt_2_percentile_vs_placebo": 1.0,
+    "real_max_t_percentile_vs_placebo": 0.91
+  },
+  "pbo": {
+    "pbo": 0.20634920634920634,
+    "n_splits": 252,
+    "median_logit": 1.770395025483319,
+    "best_is_candidate_median_oos_sr": -0.017310496087190298
+  },
+  "hold_out": {
+    "naive_discoveries": 61,
+    "naive_pct_positive_oos": 21.311475409836063,
+    "naive_median_is_net_bps": 16.775179933746692,
+    "naive_median_oos_net_bps": -5.801862890205367,
+    "naive_pct_oos_t_gt_2": 1.639344262295082,
+    "top10_mean_is_net_bps": 23.472075691281805,
+    "top10_mean_oos_net_bps": -4.329812636738586,
+    "spearman_is_t_vs_oos_t_all": 0.5163620812095531,
+    "all_candidates_pct_positive_oos": 8.555164223114096
+  },
+  "best_pattern": {
+    "pattern": "SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down",
+    "sr_per_trade": 0.4124398488820457,
+    "sr0_expected_max_noise": 0.5934974710364637,
+    "n_trials": 24488.0,
+    "n_obs": 63.0,
+    "skew": 0.2841758681716884,
+    "kurtosis": 4.13893893414356,
+    "psr_vs_zero": 0.9993622436381341,
+    "dsr": 0.07865423856624726
+  },
+  "min_backtest_length_years_for_annual_sr_1": 16.60010652817494,
+  "scorecards": {
+    "Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down": "3 pass / 8 fail / 0 n/a",
+    "Top-10 mined patterns, equal weight": "4 pass / 4 fail / 3 n/a",
+    "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)": "1 pass / 7 fail / 3 n/a",
+    "H2a ORB-15 with stop": "1 pass / 7 fail / 3 n/a",
+    "H2b ORB-30 with stop": "1 pass / 7 fail / 3 n/a",
+    "H2c ORB-15 no stop": "1 pass / 7 fail / 3 n/a",
+    "H3a gap fade |gap|>0.5 sigma, 09:20->15:15": "1 pass / 7 fail / 3 n/a",
+    "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15": "1 pass / 7 fail / 3 n/a"
+  },
+  "cost_sensitivity": [
+    {
+      "scenario": "zero",
+      "cost_bps": 0.0,
+      "in_sample_t_gt_2": 1190,
+      "top50_mean_is_net_bps": 12.89578283560275,
+      "top50_mean_oos_net_bps": 1.763687530769219,
+      "top50_pct_positive_oos": 80.0
+    },
+    {
+      "scenario": "pre_apr2026",
+      "cost_bps": 3.84,
+      "in_sample_t_gt_2": 166,
+      "top50_mean_is_net_bps": 19.255608961092573,
+      "top50_mean_oos_net_bps": -1.940586010630583,
+      "top50_pct_positive_oos": 30.0
+    },
+    {
+      "scenario": "base",
+      "cost_bps": 6.87,
+      "in_sample_t_gt_2": 61,
+      "top50_mean_is_net_bps": 18.412116348320467,
+      "top50_mean_oos_net_bps": -4.963673016439454,
+      "top50_pct_positive_oos": 24.0
+    },
+    {
+      "scenario": "stress",
+      "cost_bps": 8.64,
+      "in_sample_t_gt_2": 38,
+      "top50_mean_is_net_bps": 17.223812086446348,
+      "top50_mean_oos_net_bps": -6.677174070029371,
+      "top50_pct_positive_oos": 24.0
+    }
+  ],
+  "regime": {
+    "overnight_cum_log_pct_2012_2026": 374.0847942658604,
+    "intraday_cum_log_pct_2012_2026": -232.3306182578284,
+    "overnight_var_share_2026": 0.6550129529756463,
+    "overnight_var_share_median_2012_2025": 0.2921439849578338,
+    "tail_attribution_top50_since_2012": {
+      "n": 50,
+      "median_gap_share_of_move": 0.40000504236609885,
+      "pct_where_gap_has_same_sign": 88.0,
+      "pct_where_intraday_reverses_gap": 18.0
+    },
+    "event_days_negative_gap": 15,
+    "event_days_negative_gap_intraday_rebound": 9,
+    "nifty_sensex": {
+      "rho_daily": 0.9280778686513325,
+      "rho_by_year": {
+        "2021": 0.932,
+        "2022": 0.953,
+        "2023": 0.936,
+        "2024": 0.884,
+        "2025": 0.921,
+        "2026": 0.935
+      },
+      "diversification_gain_two_index_same_signal": 1.0184804875159579
+    },
+    "nifty_vs_nifty_etf_rho": 0.9807135425330165
+  },
+  "runtime_sec": 28.9
+}

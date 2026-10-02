@@ -1,0 +1,19 @@
+date,event,gap_pct,intraday_pct,close_to_close_pct,range_vs_1y_median,india_vix
+2019-02-26,Balakot air strike (India-Pakistan),-0.968,0.555,-0.413,1.739,17.120
+2020-01-06,US kills Soleimani; Iran threatens retaliation,-0.459,-1.470,-1.929,1.753,14.780
+2020-01-08,Iran missile strike on US bases in Iraq,-0.949,0.720,-0.229,0.992,15.640
+2020-06-16,Galwan clash (India-China),2.028,-1.012,1.017,2.749,32.970
+2022-02-24,Russia invades Ukraine,-3.061,-1.835,-4.896,2.981,31.980
+2023-10-09,Hamas attack on Israel,-0.582,-0.139,-0.721,0.728,11.400
+2024-04-15,Iran drone/missile attack on Israel,-0.804,-0.298,-1.102,1.066,12.470
+2024-10-03,Iran ballistic missiles on Israel,-1.343,-0.800,-2.142,2.064,13.170
+2025-04-07,US 'Liberation Day' tariff crash,-5.133,1.836,-3.297,2.626,22.790
+2025-05-07,Operation Sindoor (India-Pakistan),-0.602,0.745,0.143,1.057,19.060
+2025-05-12,India-Pakistan ceasefire,1.702,2.045,3.747,2.574,18.390
+2025-06-13,Israel strikes Iran,-1.682,0.999,-0.684,1.258,15.080
+2025-06-23,US strikes Iranian nuclear sites,-0.690,0.129,-0.561,1.006,14.050
+2026-03-02,US/Israel war on Iran begins (28 Feb),-2.084,0.834,-1.251,2.030,17.130
+2026-03-04,"Iran war escalation, Gulf strikes",-1.937,0.375,-1.561,1.567,21.140
+2026-03-09,Brent near $120 intraday,-2.411,0.668,-1.743,2.022,23.360
+2026-03-23,Trump 48-hour Hormuz ultimatum,-1.263,-1.375,-2.638,2.074,26.730
+2026-04-08,US-Iran ceasefire,3.114,0.594,3.709,1.016,19.700

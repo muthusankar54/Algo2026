@@ -1,0 +1,63 @@
+{
+  "judge": "advocate",
+  "persona": "Steelman advocate / strategy builder",
+  "model_note": "Claude (Fable 5.1), judging from dossier.md plus a skim of results/*.csv, summary.json and patternlab/{costs,discovery,hypotheses,regime}.py. Scored on 2 Oct 2026. Deliberately looked for the strongest honest case for the proposal.",
+  "scores": {
+    "thesis_fit": {
+      "score": 6,
+      "why": "The risk the trader fears really does arrive overnight in this regime: the gap carried 66% of daily variance in 2026 (median 29% in 2012-2025) and had the same sign as the move on 88% of the 50 largest days, so being flat at the close removes most of the cited geopolitical tail. It is a blunt fix though, because it also forfeits the entire equity premium (overnight +374% vs intraday -232% cumulative since 2012); buying puts or collars on the existing book addresses the same risk more directly."
+    },
+    "edge_evidence": {
+      "score": 3,
+      "why": "Net of today's cost there is no demonstrated edge: 0 of 24,488 patterns survive the Reality Check (best FWER p = 0.97), DSR = 0.08, hold-out median -5.8 bps, and all six pre-registered strategies are net-negative in both periods. The honest steelman is that gross structure is real and persistent (61 t>2 patterns vs a placebo mean of 17.7 and 95th pct of 42; Spearman IS-vs-OOS t = 0.52; 80% of the top-50 positive OOS at zero cost; ORB-30 gross +5.6/+4.3 bps), and the hold-out is badly underpowered (35 OOS trades for the best pattern cannot detect a 5 bps edge), so this is a cost problem more than an absence-of-signal problem."
+    },
+    "cost_feasibility": {
+      "score": 4,
+      "why": "In futures the proposal cannot clear costs: 6.87 bps round trip against 2-6 bps gross edges, and STT alone is 5 of those 6.87 bps (Rs 730 of Rs 874). The dossier itself notes options execution was not backtested; a deep-ITM (0.85 delta) weekly option pays STT on premium not notional (~Rs 60 vs Rs 730) and, with 2-point slippage per side, costs roughly 3 bps of delta-notional, i.e. back to the pre-Apr-2026 scenario where ORB-30 and gap-and-go are +0.8 to +1.1 bps net and the mined top-50 are -1.9 bps. So options make it marginal rather than impossible; nothing in the evidence makes it comfortable."
+    },
+    "method_rigor": {
+      "score": 4,
+      "why": "As proposed, open-ended pattern discovery is statistically unsound: with 24,488 trials the minimum backtest length is 16.6 years versus ~6 available, and the best in-sample t (3.27) is below the placebo 95th percentile (3.38). It can be made sound, and the repo already contains the machinery (studentised Reality Check, DSR, CSCV/PBO, point-in-time features): restrict discovery to <=10 pre-registered, economically motivated setups, report every trial, and add a forward paper-trade gate."
+    },
+    "risk_control": {
+      "score": 6,
+      "why": "Intraday-only with a hard flat-by-15:20 rule removes the dominant 2026 tail (the gap), peak-margin rules cap futures leverage at roughly 8-9x, and option-based execution bounds loss at the premium. Residual risks are intraday continuation days (2026-03-23: gap -1.3%, session -1.4%), late-Sep-2026 V-reversals, and circuit-breaker halts, all of which are bounded by stops, a daily loss limit and a VIX filter rather than being open-ended like a held position."
+    },
+    "regulatory_operational": {
+      "score": 7,
+      "why": "The Apr-2026 retail-algo framework is designed for exactly this case: a self-built system for own/family use needs no exchange registration below 10 orders/sec, and a 1-3 trades/day system sits far inside that. Static IP, daily OAuth+2FA and limit-orders-only are manageable frictions (limit-only actually lets a patient system earn rather than pay the spread, at the price of occasional non-fills); ITR-3 business-income treatment and audit thresholds are paperwork, not blockers."
+    },
+    "behavioral_sustainability": {
+      "score": 3,
+      "why": "SEBI's base rates (87.7-93% of F&O traders losing, <1% of day traders predictably profitable) describe exactly this population, and a strategy whose best plausible Sharpe is 0.3-0.5 will spend quarters in drawdown while demanding attention every session. Full automation, a pre-committed loss budget and a small capital allocation mitigate this, but the real killer is the urge to re-mine after a losing month, which the discovery approach actively invites."
+    },
+    "nifty_sensex_combination": {
+      "score": 4,
+      "why": "Daily correlation of 0.93 (true index ~0.95+) gives a measured Sharpe gain of only ~1.8%; running one signal on both mostly doubles exposure. The modest real value is structural: Tuesday (Nifty) and Thursday (Sensex) expiries give two expiry-day sessions a week for any expiry-specific setup, and Sensex options are a liquid second venue; the dossier did not test either, and Sensex futures liquidity is thin."
+    }
+  },
+  "verdict": "PILOT_ONLY",
+  "confidence": 0.72,
+  "p_net_profitable_12m": 0.18,
+  "top_failure_modes": [
+    "Cost bleed: at 6.9 bps per round trip in futures and ~250 trades a year, even a genuinely positive 3-5 bps gross signal loses 5-10% of notional per year to fees and slippage; the dossier shows every tested strategy flips from gross-positive to net-negative.",
+    "False discovery followed by live deployment: an in-sample t of ~3 is indistinguishable from the placebo distribution (95th pct 3.38), and the 61 real 'discoveries' had a median hold-out edge of -5.8 bps; a trader who mines and then trades the top pattern is trading noise with a short-side bias.",
+    "Regime and intraday-tail mismatch: the minute data ends Mar 2024 and predates the Nov-2024 F&O changes, the Apr-2026 STT hike and the 2026 war regime; intraday continuation days (2026-03-23), V-reversals, and circuit-breaker halts can hit a leveraged intraday book, and the resulting drawdown typically triggers abandonment or re-mining."
+  ],
+  "must_have_conditions": [
+    "No open-ended mining for live trading: at most ~10 pre-registered, economically motivated setups (e.g. ORB-30 with stop, down-day trend continuation short, event-day fear-gap rebound), every trial logged, and a setup is live-eligible only if it passes the repo's own gates (DSR >= 0.95 given trials, hold-out t > 2, PBO < 0.05).",
+    "Realised round-trip cost <= 4 bps of delta-notional, demonstrated from actual fills (deep-ITM or ATM weekly options via limit orders, or a verified fee structure); if real fills show > 4 bps, the pilot stops.",
+    "A forward test of at least 60 sessions / 100+ trades at paper or 1-lot size through the broker API before any scaling, with realised net edge > 0 and t > 1.5 on the forward sample alone.",
+    "Hard, automated risk rules: flat by 15:20 every day, daily loss limit of 1% of allocated capital, max 1 lot per Rs 5 lakh of allocated capital, no new entries when India VIX > 25 or within market-wide circuit-breaker events unless the pre-registered setup is specifically for them.",
+    "Keep the long-term equity book (hedged with index puts or collars if the geopolitical fear is the real driver) and cap the intraday sleeve at 10-15% of liquid net worth; the overnight premium is where the historical return is, and the intraday system must not replace it."
+  ],
+  "best_variant": "Address the thesis directly by hedging the existing holdings with index puts or collars instead of liquidating, and run intraday only as a small pre-registered sleeve: 3-5 fixed setups (ORB-30 with stop, weak-open trend-continuation short, large negative fear-gap rebound on event days), executed in deep-ITM or ATM weekly Nifty/Sensex options so statutory cost falls from ~6.9 to ~3 bps of delta-notional, with a 60-session forward-trading gate before any size. An untested but thesis-consistent class worth pre-registering is defined-risk expiry-day premium selling (Tue Nifty / Thu Sensex), since the dossier finds expiry days have slightly lower range and no drift and positions expire the same day.",
+  "evidence_that_would_change_verdict": "A 6-month forward record (>=120 trades) of pre-registered setups at actual fills showing realised net edge > 0 with t > 2 would move me to CONDITIONAL_GO; conversely, if options execution measured at real fills still costs > 5 bps of delta-notional, or post-2024 futures-price minute data shows the gross ORB/continuation edges have shrunk below ~5 bps, I would move to NO_GO.",
+  "disagreements_with_dossier": [
+    "Options execution is listed as a limitation but its cost implication is not worked through: the Rs 70 ATM round trip (and ~Rs 60 STT on a deep-ITM option) is roughly a tenth of the Rs 730 futures STT, so the effective cost floor for the proposal 'as written' (futures/options) is nearer 3 bps of delta-notional than 6.9 bps; the pre-Apr-2026 cost column is the relevant one for an options implementation.",
+    "The hold-out test is underpowered and this is not stated: with ~35-100 OOS trades per pattern and ~50 bps per-trade dispersion, it cannot distinguish a +5 bps edge from zero, so '21% stayed profitable' is weaker evidence against the proposal than it reads; the Spearman of 0.52 is the more informative statistic and it supports persistent directional structure.",
+    "The -232% cumulative intraday figure mixes in the untradeable 09:15 opening print (-6.8 / -3.1 bps per day) and describes passive drift, not the opportunity set for a directional system; it argues against being long intraday every day, not against intraday trading as such.",
+    "Slippage is modelled as 1 index point per side with market orders, while SEBI requires limit orders for API trades; a patient limit-order system can have lower realised slippage (with non-fill risk), though STT dominates so this changes little in futures.",
+    "Untested classes that fit the no-overnight thesis are missing: defined-risk expiry-day premium selling on Tue/Thu, Nifty-vs-Sensex relative-value, and a high-VIX regime filter (Gao et al. find intraday momentum concentrated on high-vol/news days; the one low-VIX pattern reported went -13.5 bps OOS, the high-VIX split is not reported). Also, the conditional open-to-close table shows big-down-gap days turned mildly positive (+7.1 bps, n=91) in Apr-2024 to Sep-2026 versus -13.0 in 2015-2020, a hint of a post-2024 regime change that the minute-data study cannot see."
+  ]
+}
