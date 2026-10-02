@@ -8,8 +8,8 @@ entry price (close of the bar before the entry minute) to the exit price. With M
     Q = (M * r^2) @ M.T    sum of squares
     C = M @ M.T            number of such days
 
-so ~40k candidate patterns are evaluated per run, and the same algebra with bootstrap day
-weights gives White's Reality Check without materialising 40k return series.
+so all ~12k patterns x 2 directions are evaluated per run, and the same algebra with bootstrap
+day weights gives White's Reality Check without materialising 24k return series.
 """
 from __future__ import annotations
 
@@ -36,8 +36,9 @@ def price_col(hhmm: str) -> int:
     return 374 if hhmm == "15:30" else minute_index(hhmm) - 1
 
 
-def outcome_bps(panel: IntradayPanel, entry: str, exit_: str) -> np.ndarray:
-    return 1e4 * np.log(panel.close[:, price_col(exit_)] / panel.close[:, price_col(entry)])
+def outcome_bps(panel: IntradayPanel, entry: str, exit_: str, entry_delay: int = 0) -> np.ndarray:
+    """entry_delay > 0 fills that many minutes after the signal (latency sensitivity)."""
+    return 1e4 * np.log(panel.close[:, price_col(exit_)] / panel.close[:, price_col(entry) + entry_delay])
 
 
 @dataclass
@@ -52,7 +53,7 @@ class ComboData:
 
 
 def prepare(panel: IntradayPanel, ctx: pd.DataFrame, day_mask: np.ndarray,
-            combos=ENTRY_EXIT) -> list[ComboData]:
+            combos=ENTRY_EXIT, entry_delay: int = 0) -> list[ComboData]:
     out = []
     for entry, exit_ in combos:
         preds = build_predicates(panel, ctx, minute_index(entry))
@@ -60,7 +61,7 @@ def prepare(panel: IntradayPanel, ctx: pd.DataFrame, day_mask: np.ndarray,
         P = len(preds.names)
         I, J = np.triu_indices(P)
         keep = (I == J) | (fam[I] != fam[J])
-        r = outcome_bps(panel, entry, exit_)[day_mask]
+        r = outcome_bps(panel, entry, exit_, entry_delay)[day_mask]
         out.append(ComboData(entry, exit_, preds.names, preds.mask[:, day_mask].astype(float), r,
                              I[keep], J[keep]))
     return out
@@ -111,8 +112,8 @@ def pattern_name(combos: list[ComboData], row) -> str:
     return f"{row.direction.upper()} {cd.entry}->{cd.exit} if {cond}"
 
 
-def reality_check(combos: list[ComboData], table: pd.DataFrame, cost_bps: float, min_trades: int,
-                  n_boot: int = 500, mean_block: float = 5.0, seed: int = 7) -> np.ndarray:
+def reality_check(combos: list[ComboData], min_trades: int, n_boot: int = 500,
+                  mean_block: float = 5.0, seed: int = 7) -> np.ndarray:
     """Studentised max-t bootstrap over *all* candidates (White 2000; Romano-Wolf single step).
 
     Returns the bootstrap distribution of max_k t*_k, where t*_k is candidate k's

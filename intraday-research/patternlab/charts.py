@@ -50,8 +50,9 @@ def overnight_vs_intraday():
     _title(fig, "Nifty 50: all of the gain since 2012 came overnight")
     ax.set_ylabel("Cumulative log return, %")
     ax.legend(loc="upper left")
-    ax.text(0, -0.16, "Daily NSE data Feb 2012 – Sep 2026. Part of the intraday loss is the 09:15 opening-print "
-            "effect (see time-of-day chart).", transform=ax.transAxes, color=MUTED, fontsize=8)
+    ax.text(0, -0.16, "Daily NSE data Feb 2012 – Sep 2026, split at the official 09:15 open. Measured from the first "
+            "tradeable minute (09:16), 2015-24 is overnight +147%, intraday −59%.", transform=ax.transAxes,
+            color=MUTED, fontsize=8)
     _save(fig, "chart_overnight_vs_intraday.png")
 
 

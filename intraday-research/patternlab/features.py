@@ -3,8 +3,8 @@
 Every predicate evaluated for decision minute k may only use:
   * daily data up to and including the previous session, and
   * intraday bars with column index < k of the current session.
-tests/test_no_lookahead.py enforces this by scrambling the future and checking that no
-predicate changes.
+tests/test_patternlab.py enforces this by scrambling the future (later bars and later days)
+and checking that no predicate changes.
 
 A pattern is a conjunction of one or two predicates from different families, plus a
 direction (long/short) and an entry/exit time.
@@ -120,7 +120,7 @@ def build_predicates(panel: IntradayPanel, ctx: pd.DataFrame, k: int) -> Predica
                                   ["big_down", "down", "flat", "up", "big_up"])
     fams["pclose_to_now"] = _bucket((price / prev_close - 1) / sig, [-0.2, 0.2], ["down", "flat", "up"])
     for n in (15, 30):
-        if k >= n:
+        if k > n:  # at k == n the price is inside the range by construction
             orh, orl = h[:, :n].max(1), l[:, :n].min(1)
             fams[f"or{n}"] = {"above": price > orh, "inside": (price <= orh) & (price >= orl),
                               "below": price < orl}

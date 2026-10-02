@@ -7,18 +7,20 @@
 **Not as proposed.** I tested the idea three ways: against 10 years of Nifty minute data, against
 the academic literature, and with a panel of independent AI judges. All three point the same way:
 
-1. **The premise is only half right.** Going flat every evening does remove most of 2026's
-   geopolitical risk: 66% of Nifty's daily variance this year arrived as the 09:15 gap. But since
-   2012 *all* of Nifty's return also arrived overnight (+374% overnight vs −232% during market
-   hours, in log terms). An intraday-only trader gives up the part of the market that pays.
-2. **No mined pattern survives.** Out of 24,488 intraday patterns, 61 looked good in 2015–2020.
-   Only 13 stayed profitable in the untouched 2021–2024 hold-out, and their median edge went from
-   +16.8 to −5.8 bps per trade. Taken together they did worse than simply shorting Nifty every
+1. **The premise is only half right.** Going flat every evening does remove much of 2026's
+   geopolitical risk: 57% of Nifty's daily variance this year arrived as the 09:15 gap, against a
+   usual 29%. But the overnight session is also where Nifty's return has come from. In 2015–2024,
+   measured from the first tradeable minute, it was +147% overnight vs −59% during market hours
+   (log terms). An intraday-only trader gives up the part of the market that pays.
+2. **No mined pattern survives.** Out of 24,206 intraday patterns, 57 looked good in 2015–2020.
+   Only 11 stayed profitable in the untouched 2021–2024 hold-out, and their median edge went from
+   +17.1 to −6.6 bps per trade. Taken together they did worse than simply shorting Nifty every
    day. After correcting for the number of patterns tried, the best one is indistinguishable
-   from luck under all three tests used (p = 0.09 to 0.97).
+   from luck under all three tests used (p = 0.15 to 0.99).
 3. **Costs went up.** Since the 1 Apr 2026 STT hike, a Nifty futures round trip costs about
-   6.9 bps (₹874 + slippage per lot). Every gross edge I found — including the best
-   literature strategy, a 30-minute opening-range breakout — is smaller than that.
+   6.9 bps (₹874 + slippage per lot). Every gross edge I found is smaller than that. The closest
+   is a 30-minute opening-range breakout from the literature: about +5 bps before costs, real and
+   stable, but below even the 6.0 bps of statutory charges.
 4. **Nifty + Sensex "combined" is one bet, not two.** Their daily returns correlate at ~0.95.
    Running the same signal on both adds about 1–2% to risk-adjusted return and doubles position size.
 5. **Six independent AI judges agreed.** Five voted NO-GO and one voted PILOT-ONLY. Their mean
@@ -36,21 +38,24 @@ What I suggest instead is in [section 8](#8-what-i-suggest).
 
 | Measure (Nifty 50, daily NSE data) | Value |
 |---|---|
-| Cumulative log return 2012 – Sep 2026, overnight (prev close → open) | **+374%** |
-| Same, during market hours (open → close) | **−232%** |
+| Cumulative log return 2012 – Sep 2026, overnight (prev close → official open) | +381% |
+| Same, during market hours (official open → close) | −239% |
+| 2015–2024 from minute data, measured from the first tradeable minute (09:16) | **+147% overnight, −59% intraday** |
 | Share of daily variance from the overnight gap, median 2012–2025 | 29% |
-| Same, 2026 year to date | **66%** |
+| Same, 2026 year to date | **57%** |
 | Of the 50 biggest daily moves since 2012, gap had the same sign | 88% |
-| 2026 YTD cumulative log return: overnight vs during market hours | −0.8% vs **−11.3%** |
+| 2026 YTD cumulative log return, split at the official open: overnight vs market hours | −0.8% vs −11.3% |
+| Same, after adjusting for the opening-print bias (2021–24 average, −3.1 bps/day) | about −6.4% vs −5.7% |
 
-The last row cuts against the premise. In 2026 the *variance* arrived overnight, but the
-*decline* happened during market hours: big gaps in both directions roughly cancelled, while the
-sessions ground lower. An intraday trader with a long bias would have taken this year's fall
-anyway.
+So 2026's *variance* came mostly overnight, but its *decline* split roughly evenly between the
+gaps and the sessions. There is no 2026 minute data to settle this exactly. Staying flat overnight
+would have avoided perhaps half of this year's fall; an intraday trader with a long bias would
+still have taken the other half.
 
-Part of the intraday loss is an artefact: the index's 09:15 opening print sits on average 3–7 bps
-above where Nifty actually trades a minute later, and nobody can trade at that print. After 09:30
-the drift is small (about −2 to −3 bps a day).
+About two thirds of the measured intraday loss is an artefact. The index's 09:15 opening print
+sits on average 3–7 bps above where Nifty actually trades a minute later, and nobody can trade at
+that print. That is why the minute-based row above is the one to trust. After 09:30 the drift is
+small (about −2 to −3 bps a day).
 
 ![Time of day](results/chart_time_of_day.png)
 
@@ -87,7 +92,7 @@ about 8% of a typical day's entire high-to-low range.
 
 ## 3. Does a discoverable intraday edge exist? (pattern discovery)
 
-**Setup.** Nifty 50 1-minute bars, Mar 2015 – Mar 2024 (2,213 clean days). Pattern grammar: every
+**Setup.** Nifty 50 1-minute bars, Mar 2015 – Mar 2024 (2,223 usable days). Pattern grammar: every
 combination of one or two of ~55 point-in-time conditions (gap size, previous-day move and close
 location, NR7/inside day, trend, 5-day move, VIX regime, weekday, expiry day, move since open,
 opening-range position, gap-fill state, first-15-minute candle, range so far, price vs TWAP,
@@ -98,20 +103,22 @@ held out and never looked at during discovery. Costs at today's 6.9 bps.
 
 | Test | Result | What it means |
 |---|---|---|
-| Patterns tested | 24,488 | |
-| "Look good" (t > 2 after costs) | 61 (51 with win rate > 55%) | What a naive backtest would show you |
-| Same pipeline on shuffled (pure-noise) outcomes, 100 runs | 17.7 on average, 95th pct 42 | Real data has *some* extra weak structure… |
-| Best pattern t-stat: real vs noise | 3.27 vs noise 95th pct 3.38 | …but the best real pattern is not distinguishable from luck |
-| Family-wise p-value of the best pattern: White's Reality Check / Hansen SPA (500 bootstraps over all 24,488) / placebo rank | 0.97 / 0.88 / 0.09 | Not significant under any null; 0 patterns survive RC or SPA |
+| Patterns tested | 24,206 (12,103 conditions × long/short) | |
+| "Look good" (t > 2 after costs) | 57 (50 with win rate > 55%) | What a naive backtest would show you |
+| Same pipeline on shuffled (pure-noise) outcomes, 100 runs | 17.3 on average, 95th pct 38 | Real data has *some* extra weak structure… |
+| Best pattern t-stat: real vs noise | 3.12 vs noise 95th pct 3.41 | …but the best real pattern is not distinguishable from luck |
+| Family-wise p-value of the best pattern: White's Reality Check / Hansen SPA (500 bootstraps over all 24,206) / placebo rank | 0.99 / 0.94 / 0.15 | Not significant under any null; 0 patterns survive RC or SPA |
 | Holm / Benjamini-Hochberg | 0 survive | |
-| Deflated Sharpe of best pattern | 0.08 (needs ≥ 0.95) | |
-| Probability of backtest overfitting (CSCV) | 0.21 | |
+| Deflated Sharpe of best pattern | 0.01 (needs ≥ 0.95; below 0.6 under every reasonable choice of trial variance) | |
+| Probability of backtest overfitting (CSCV) | 0.21 after costs, 0.37 before costs | |
 | Data needed to test this many ideas fairly | 16.6 years (had ~6) | Bailey et al. minimum backtest length |
-| t > 2 discoveries still profitable in 2021–24 hold-out | 13 of 61 (21%); 1 with hold-out t > 2 | |
-| Median edge per trade, in-sample → hold-out | +16.8 → −5.8 bps | |
-| Top-10 patterns traded together | +21% in-sample → −2.6% in hold-out | |
-| Top-50 pooled hold-out vs "short every day 09:30–15:15" | −5.6 vs −4.5 bps/trade net | Mining did worse than a naive bear bias |
-| Robustness: discover on 2015–2019 only (no COVID crash) | 47 look good; 30% profitable in hold-out; median +13.9 → −5.4 bps | Same conclusion |
+| t > 2 discoveries still profitable in 2021–24 hold-out | 11 of 57 (19%); 1 with hold-out t > 2 | |
+| Median edge per trade, in-sample → hold-out | +17.1 → −6.6 bps | |
+| Top-10 patterns traded together | +19.7% in-sample → −1.3% in hold-out | |
+| Top-50 pooled hold-out vs "short every day 09:30–15:15" | −5.9 vs −4.5 bps/trade net | Mining did worse than a naive bear bias |
+| Rank correlation of in-sample vs hold-out signal strength (gross t, all patterns) | 0.14 | Signal barely persists |
+| Robustness: discover on 2015–2019 only (no COVID crash) | 43 look good; 35% profitable in hold-out; median +14.1 → −5.4 bps | Same conclusion |
+| Robustness: fill one minute after the signal | 46 look good instead of 57 | Same conclusion |
 
 ![Best t vs noise](results/chart_best_t_vs_noise.png)
 
@@ -119,8 +126,8 @@ held out and never looked at during discovery. Costs at today's 6.9 bps.
 
 ![Top-10 equity](results/chart_top10_equity.png)
 
-Before costs, the top-50 patterns still made +1.8 bps per trade in the hold-out (80% of them
-positive). So weak, real structure exists. It is about a quarter of what one round trip now costs.
+Before costs, the top-50 patterns still made +2.6 bps per trade in the hold-out (88% of them
+positive). So weak, real structure exists. It is about a third of what one round trip now costs.
 
 ## 4. The textbook intraday strategies, tested as written
 
@@ -129,31 +136,35 @@ These were fixed in advance from the literature, so no data-mining correction is
 | Strategy (Nifty, 2015–2024) | Gross bps/trade, 2015–20 → 2021–24 | Net at today's cost |
 |---|---|---|
 | Intraday momentum (Gao et al. 2018: prev close→09:45 sign, trade 15:00→15:30) | +0.2 → +1.0 | −6.7 / −5.9 |
-| Opening-range breakout, 15 min, stop at far side | +4.4 → +3.3 | −2.5 / −3.5 |
-| **Opening-range breakout, 30 min, stop at far side** | **+5.6 (t 3.2) → +4.3 (t 2.3)** | −1.2 / −2.6 |
-| Opening-range breakout, 15 min, no stop | +1.1 → +2.0 | −5.8 / −4.9 |
-| Gap fade (|gap| > 0.5σ, 09:20→15:15) | −2.5 → −4.0 | −9.3 / −10.9 |
-| Gap-and-go (same) | +2.5 → +4.0 | −4.4 / −2.9 |
+| Opening-range breakout, 15 min, stop at far side | +4.3 → +3.4 | −2.6 / −3.5 |
+| **Opening-range breakout, 30 min, stop at far side** | **+5.5 (t 3.1) → +4.3 (t 2.3)** | −1.4 / −2.6 |
+| Opening-range breakout, 15 min, no stop | +0.8 → +2.0 | −6.0 / −4.9 |
+| Gap fade (\|gap\| > 0.5σ, 09:20→15:15) | −1.6 → −4.0 | −8.5 / −10.9 |
+| Gap-and-go (same) | +1.6 → +4.0 | −5.3 / −2.9 |
 
 ![Edge vs cost](results/chart_edge_vs_cost.png)
 
-The 30-minute opening-range breakout is the one genuine lead. Its gross edge was positive in
-every calendar year 2015–2024 (0.8 to 12.8 bps), and it held up in the hold-out. At pre-April-2026
-costs it netted roughly breakeven (+1.8 / +0.5 bps). At today's costs it loses. Trading it only
-on high-VIX days did not fix that: it helped in 2015–20 (+8.4 bps gross) and failed in 2021–24
-(+2.0).
+The 30-minute opening-range breakout is the one genuine lead. Over 2015–2024 its gross edge was
++5.0 bps per trade (t = 3.9, 95% interval 2.5 to 7.6 bps). It was positive in every calendar year
+(0.9 to 11.3 bps), and it held up in the hold-out. The code audit confirmed it survives harsher
+fill assumptions (4.6–5.2 bps).
+
+At today's 6.9 bps it nets about −1.8 bps per trade. That loss is *not* statistically certain
+(t = −1.4). But today's statutory charges alone, before any slippage, are 6.0 bps, more than the
+point estimate. At pre-April-2026 costs it would have netted about breakeven. Trading it only on
+high-VIX days did not help: it worked in 2015–20 (+8.2 bps gross) and failed in 2021–24 (+2.0).
 
 Weekly-expiry Thursdays (2019–2024) showed no directional drift and slightly *smaller* ranges than
 other days.
 
 ## 5. Bull or bear?
 
-95% of the patterns that "looked good" were **short** setups: for example "previous day down and
-today already down big by 09:30 → short until 15:15". (Excluding the 2020 crash it is 74%.) That
+98% of the patterns that "looked good" were **short** setups: for example "previous day down and
+today already down big by 09:30 → short until 15:15". (Excluding the 2020 crash it is 70%.) That
 fits two real effects: a small negative drift during market hours, and down days that keep going
-down. The simplest bear system, shorting Nifty every day from 09:30 to 15:15, made +3.8 bps gross
-per day in 2015–20 and +2.4 in 2021–24. That is −3.1 and −4.5 bps after today's cost. The mined
-short patterns did no better out of sample. Nifty is down 13% in 2026, which makes a permanent bear bias
+down. The simplest bear system, shorting Nifty every day from 09:30 to 15:15, made +4.0 bps gross
+per day in 2015–20 and +2.4 in 2021–24. That is −2.9 and −4.5 bps after today's cost. The mined
+short patterns did worse out of sample. Nifty is down 13% in 2026, which makes a permanent bear bias
 feel right. It is a narrative, not an edge. Any directional bias has to pass the same gates.
 
 ## 6. Nifty and Sensex combined
@@ -173,15 +184,16 @@ I checked the idea four ways.
 
 ### 7a. Quantitative eval gates (like an ML eval suite)
 
-Every candidate faces the same 11 gates: net edge > 0, t ≥ 3, Reality Check p < 0.05, Deflated
+Every candidate faces the same 11 gates: net edge > 0, t ≥ 3, family-wise p < 0.05 (Hansen SPA
+over everything tried), Deflated
 Sharpe ≥ 0.95, PBO ≤ 0.20, hold-out net > 0, hold-out t ≥ 1.5, keeps ≥ 50% of edge out of sample,
 positive under stress costs, positive in ≥ 70% of years, ≥ 100 trades. The thresholds come from
-Harvey-Liu-Zhu (2016), Bailey & López de Prado (2014, 2017) and White (2000). Full table:
+Harvey-Liu-Zhu (2016), Bailey & López de Prado (2014, 2017), White (2000) and Hansen (2005). Full table:
 [`results/eval_scorecards.csv`](results/eval_scorecards.csv).
 
 | Candidate | Gates passed |
 |---|---|
-| Best mined pattern | 3 of 11 |
+| Best mined pattern ("short 09:30→15:15 if yesterday closed mid-range and the first 15 minutes are strongly bearish") | 3 of 11 (net positive in-sample, t > 3, ≥ 100 trades; then −8.9 bps/trade in the hold-out) |
 | Top-10 mined patterns | 4 of 8 applicable |
 | Each literature strategy (momentum, 3× ORB, gap fade, gap-and-go) | 1 of 8 applicable |
 
@@ -192,7 +204,8 @@ Nothing passes. The minimum before risking money is all gates.
 - **Placebo set:** the same discovery pipeline run on shuffled outcomes (100 runs). If your method
   finds "patterns" in noise as good as the real ones, it cannot tell signal from luck. It could not.
 - **Look-ahead tests:** unit tests scramble every bar after the decision time and confirm no
-  pattern condition changes (`tests/test_patternlab.py`, 12 tests passing).
+  pattern condition changes, and do the same for later *days* (`tests/test_patternlab.py`,
+  18 tests passing).
 - **Independent code audit:** a separate AI agent audited the code for look-ahead, off-by-one and
   statistics errors. See [section 7d](#7d-independent-code-audit).
 
@@ -200,7 +213,7 @@ Nothing passes. The minimum before risking money is all gates.
 
 Six AI judges, each with a different expert persona and spread across three Claude models,
 scored the proposal blind. All read the same evidence dossier
-([`ai_evals/dossier.md`](ai_evals/dossier.md)) and used the same fixed rubric. None saw another's
+([`ai_evals/dossier.md`](ai_evals/dossier.md), the pre-audit snapshot) and used the same fixed rubric. None saw another's
 output. Raw judgments: [`ai_evals/judgments/`](ai_evals/judgments/); aggregation:
 [`ai_evals/panel_summary.md`](ai_evals/panel_summary.md).
 
@@ -231,18 +244,20 @@ evidence it would *make money*, and that a retail trader is unlikely to stick wi
 **What the judges caught, and what I changed in response:**
 
 - *Reality Check too conservative (quant).* Correct. White's test counts thousands of hopeless
-  patterns. I added Hansen's SPA test, which handles them properly: p rose from 0.97 to 0.88 for
-  the best pattern. The placebo rank puts it at ~0.09. None reach 0.05.
+  patterns. I added Hansen's SPA test, which handles them properly. For the judges' snapshot it
+  lowered p from 0.97 to 0.88; after the audit fixes it is 0.94. The placebo rank gives ~0.15.
+  None reach 0.05.
 - *Effective number of trials is smaller than 24,488 (quant).* Correct. The patterns overlap, so
   the Deflated Sharpe and minimum-backtest-length figures are on the harsh side. The hold-out
   result does not depend on them.
-- *2026's fall happened intraday (macro, quant).* Correct and important. Added to section 1.
+- *2026's fall happened intraday (macro, quant).* Partly. The code audit showed the split is
+  distorted by the opening print; adjusted, it is roughly even (section 1).
 - *Do short patterns beat a plain short (macro)?* Checked: no (section 5).
 - *Exclude the 2020 crash (quant).* Checked: same result (section 3).
 - *Options lower the cost hurdle (advocate, compliance).* Partly correct. Worked through in
   section 8; not backtested here.
 - *Hold-out tests are underpowered for single patterns (advocate).* Fair for any one pattern. Not
-  for the pooled result: 3,270 hold-out trades of the top 50 averaged −5.6 bps.
+  for the pooled result: 3,141 hold-out trades of the top 50 averaged −5.9 bps.
 - *Limit-only API orders (risk, advocate).* SEBI's rule means real fills differ from this
   backtest's 1-point slippage: lower cost, but missed entries and stops that may not fill. Measure
   it in paper trading.
@@ -252,7 +267,34 @@ cannot validate P&L; only the hold-out and future paper trading can.
 
 ### 7d. Independent code audit
 
-<!-- AUDIT -->
+A separate AI agent audited all of `patternlab` against independent re-implementations, without
+seeing my conclusions as something to defend. Full report: [`ai_evals/code_audit.md`](ai_evals/code_audit.md).
+
+**Result: 0 critical, 3 major, 9 minor, 6 nit findings. None overturns the conclusion.**
+The audit found:
+
+- no look-ahead and no in-sample/hold-out leakage (deleting all post-2020 data leaves in-sample
+  inputs byte-identical);
+- no off-by-one in any backtest;
+- no wrong statistics formula: scoring, block statistics and the ORB backtest match brute-force
+  versions to floating-point precision, and Holm, BH, DSR, MinBTL, PBO and SPA match the papers;
+- costs charged exactly once (₹874.3 per lot).
+
+| Finding | What I did |
+|---|---|
+| **A1 (major)** The 09:15 opening print inflates the "intraday" loss about 3× and makes the 2026 split fragile | Added the minute-based split (from 09:16); rewrote section 1; softened the 2026 claim |
+| **A2 (major)** The 0.52 in-sample/hold-out rank correlation was mostly cost arithmetic | Now report gross-signal correlation: 0.14 |
+| **A3 (major)** ORB-30's gross edge is real; its net loss is within noise | Added the confidence interval and the statutory-only comparison (section 4) |
+| B1/B2 RC p and DSR on the harsh side | Added SPA and placebo p; DSR now uses gross trial variance; all three nulls reported |
+| B3 PBO flattered by costs | Report 0.37 before costs alongside 0.21 |
+| B5 Daily file missing 11 sessions (e.g. 1 Feb 2020 Budget Saturday) | Filled from minute data, so "previous close" is always the true previous session |
+| B6 Variance share not additive (66% → 57% in 2026) | Fixed formula |
+| B7 Same-bar fills | Added a one-minute-delay robustness run (57 → 46 "discoveries") |
+| C1 239 duplicate opening-range patterns | Removed (24,488 → 24,206 candidates) |
+| C2–C6 Event dates, docstrings, missing tests, ad-hoc numbers | Fixed dates (Soleimani → 3 Jan 2020; Galwan flagged as intraday news); added 6 tests; moved every robustness number in this report into `run_all.py` |
+
+Left as stated limitations: 1-point slippage is conservative for one lot (B8). Single-pattern
+hold-out tests are underpowered (B9); the pooled test is not.
 
 ## 8. What I suggest
 

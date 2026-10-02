@@ -41,7 +41,9 @@ def intraday_momentum(panel, ctx, cost_bps):
     prev_close = ctx["prev_close"].reindex(panel.dates).to_numpy()
     signal = np.sign(np.log(panel.close[:, price_col("09:45")] / prev_close))
     last30 = 1e4 * np.log(panel.close[:, price_col("15:30")] / panel.close[:, price_col("15:00")])
-    return signal * last30 - cost_bps
+    net = signal * last30 - cost_bps
+    net[signal == 0] = np.nan  # no signal, no trade
+    return net
 
 
 def opening_range_breakout(panel, minutes: int, cost_bps: float, use_stop: bool = True):

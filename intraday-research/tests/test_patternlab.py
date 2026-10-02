@@ -95,8 +95,85 @@ def test_pbo_is_high_for_pure_noise():
     assert 0.3 < out["pbo"] < 0.7
 
 
-def test_cost_model_matches_broker_calculator():
-    # Zerodha charges page (Oct 2026): 1 lot Nifty futures at 22,500 -> Rs 874 excl. slippage.
+def test_cost_model_matches_hand_calculation():
+    # 1 lot Nifty futures at 22,500 (lot 65, notional Rs 14,62,500), rates from 1 Apr 2026,
+    # worked by hand: STT 0.05% sell 731.25; NSE txn 0.00183% x2 53.53; SEBI Rs10/cr x2 2.93;
+    # stamp 0.002% buy 29.25; brokerage 2 x 20; GST 18% on (40 + 53.53 + 2.93) 17.36.
+    expected = 731.25 + 53.53 + 2.93 + 29.25 + 40 + 17.36  # = 874.32, matches Zerodha's calculator
     m = FuturesCostModel(slippage_points_per_side=0)
     rupees = m.round_trip_bps(22500, 65) * 22500 * 65 / 1e4
-    assert rupees == pytest.approx(874, abs=1)
+    assert rupees == pytest.approx(expected, abs=0.05)
+
+
+def test_predicates_ignore_future_days():
+    panel, daily, vix = _synthetic()
+    ctx = daily_context(daily, vix)
+    k = minute_index("10:15")
+    before = build_predicates(panel, ctx, k).mask[:, :200]
+    rng = np.random.default_rng(2)
+    noisy = IntradayPanel(panel.dates, panel.open.copy(), panel.high.copy(), panel.low.copy(), panel.close.copy())
+    for m in (noisy.open, noisy.high, noisy.low, noisy.close):
+        m[200:] *= np.exp(rng.normal(0, 0.02, m[200:].shape))
+    daily2 = daily.copy()
+    daily2.iloc[200:] *= 1.07
+    after = build_predicates(noisy, daily_context(daily2, vix), k).mask[:, :200]
+    assert np.array_equal(before, after)
+
+
+def _noise_combos(n_days=300, n_pred=8, seed=4):
+    rng = np.random.default_rng(seed)
+    mask = (rng.random((n_pred, n_days)) < 0.5).astype(float)
+    I, J = np.triu_indices(n_pred)
+    return [ComboData("09:45", "15:15", [f"p{i}=x" for i in range(n_pred)], mask, rng.normal(0, 50, n_days), I, J)]
+
+
+def test_spa_null_never_exceeds_reality_check_null():
+    from patternlab.discovery import reality_check, spa_check
+    combos = _noise_combos()
+    rc = reality_check(combos, min_trades=30, n_boot=60, seed=1)
+    spa = spa_check(combos, cost_bps=5.0, min_trades=30, n_boot=60, seed=1)
+    assert np.all(spa <= rc + 1e-9)
+
+
+def test_fwer_pvalues_are_valid_on_noise():
+    from patternlab.discovery import fwer_pvalues, reality_check, score
+    combos = _noise_combos()
+    table = score(combos, cost_bps=0.0, min_trades=30)
+    p = fwer_pvalues(table.t.to_numpy(), reality_check(combos, min_trades=30, n_boot=100, seed=3))
+    assert ((p > 0) & (p <= 1)).all()
+    assert p.min() > 0.05  # nothing is significant in pure noise
+
+
+def test_block_stats_match_brute_force():
+    from patternlab.discovery import block_stats, score, trades
+    combos = _noise_combos()
+    table = score(combos, cost_bps=4.0, min_trades=30)
+    s, q, n = block_stats(combos, table, cost_bps=4.0, n_blocks=5)
+    row = table.iloc[7]
+    x = trades(combos, row, 4.0)
+    assert s[:, 7].sum() == pytest.approx(x.sum())
+    assert q[:, 7].sum() == pytest.approx((x ** 2).sum())
+    assert n[:, 7].sum() == len(x)
+
+
+def test_opening_range_breakout_long_and_stop():
+    from patternlab.hypotheses import opening_range_breakout
+    dates = pd.bdate_range("2020-01-01", periods=2)
+    base = np.full((2, 375), 100.0)
+    up = base.copy()
+    up[0, 30:] = np.linspace(100.5, 103, 345)  # breaks above the 100 range and trends up
+    up[1, 30:] = 100.5  # breaks out...
+    up[1, 40:] = 99.0  # ...then falls through the stop at the range low (100)
+    hi, lo = up + 0.01, up - 0.01
+    hi[:, :30], lo[:, :30] = 100.0, 100.0
+    panel = IntradayPanel(dates, up.copy(), hi, lo, up)
+    net = opening_range_breakout(panel, 30, cost_bps=0.0, use_stop=True)
+    assert net[0] > 0
+    assert net[1] == pytest.approx(1e4 * np.log(100.0 / 100.5))
+
+
+def test_overnight_variance_share_is_additive():
+    from patternlab.regime import decompose, yearly_profile
+    _, daily, vix = _synthetic()
+    yp = yearly_profile(decompose(daily), vix, cost_bps=5.0)
+    assert ((yp.overnight_var_share >= 0) & (yp.overnight_var_share <= 1)).all()

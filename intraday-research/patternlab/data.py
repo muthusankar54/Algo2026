@@ -79,6 +79,28 @@ def load_minute_panel(path: Path | str | None = None) -> IntradayPanel:
     return IntradayPanel(dates, mats["Open"], mats["High"], mats["Low"], close)
 
 
+def load_minute_sessions(path: Path | str | None = None) -> pd.DataFrame:
+    """Daily OHLC of *every* session in the minute file, including Muhurat and special
+    sessions that load_minute_panel drops. Used to fill sessions missing from the daily file,
+    so that "previous close" is always the true previous session."""
+    path = Path(path) if path else DATA_DIR / "nifty50_1min.csv"
+    raw = pd.read_csv(path)
+    day = pd.to_datetime(raw["Date"], format="%d-%m-%Y")
+    ts = pd.to_datetime(raw["Date"] + " " + raw["Time"], format="%d-%m-%Y %H:%M:%S")
+    df = raw[["Open", "High", "Low", "Close"]].astype(float).assign(day=day, ts=ts).sort_values("ts")
+    g = df.groupby("day")
+    out = pd.DataFrame({"Open": g["Open"].first(), "High": g["High"].max(),
+                        "Low": g["Low"].min(), "Close": g["Close"].last()})
+    out.index.name = "Date"
+    return out
+
+
+def patch_daily(daily: pd.DataFrame, sessions: pd.DataFrame) -> pd.DataFrame:
+    """Official daily values where present; minute-derived values for missing sessions."""
+    sessions = sessions[(sessions.index >= daily.index[0]) & (sessions.index <= daily.index[-1])]
+    return daily.combine_first(sessions)[["Open", "High", "Low", "Close"]].sort_index()
+
+
 def load_daily(name: str) -> pd.DataFrame:
     """Daily OHLC from eod2_data, e.g. load_daily('nifty_50') or load_daily('india_vix')."""
     df = pd.read_csv(DATA_DIR / f"{name}_daily.csv", parse_dates=["Date"])

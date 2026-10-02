@@ -16,7 +16,7 @@ from scipy import stats as sps
 from . import discovery as disc
 from . import hypotheses, regime
 from .costs import COST_SCENARIOS_BPS
-from .data import load_daily, load_minute_panel
+from .data import load_daily, load_minute_panel, load_minute_sessions, patch_daily
 from .evals import scorecard, yearly_hit_rate
 from .features import daily_context, eligible_days
 from .stats import deflated_sharpe, min_backtest_length_years, pbo_cscv
@@ -39,13 +39,62 @@ def _decay(is_edge: float, oos_edge: float):
     return oos_edge / is_edge if is_edge > 0 else None
 
 
+def robustness(panel, ctx, elig, daily, cost) -> dict:
+    out = {}
+    # a) discovery without the 2020 crash year
+    m19 = elig & (panel.dates < "2020-01-01")
+    oos_mask = elig & (panel.dates >= IS_END)
+    c19, c_oos = disc.prepare(panel, ctx, m19), disc.prepare(panel, ctx, oos_mask)
+    t19 = disc.score(c19, cost, MIN_TRADES)
+    n19 = t19[t19.t > 2]
+    e19 = disc.evaluate_on(c_oos, n19, cost)
+    out["discovery_2015_2019_only"] = {
+        "candidates": len(t19), "t_gt_2": len(n19), "max_t": float(t19.t.max()),
+        "short_share": float((n19.direction == "short").mean()),
+        "pct_positive_oos": float(100 * (e19.oos_net_bps > 0).mean()),
+        "median_is_net_bps": float(n19.net_bps.median()), "median_oos_net_bps": float(e19.oos_net_bps.median()),
+        "oos_t_gt_2": int((e19.oos_t > 2).sum())}
+    # b) one-minute execution delay
+    is_mask = elig & (panel.dates < IS_END)
+    tdel = disc.score(disc.prepare(panel, ctx, is_mask, entry_delay=1), cost, MIN_TRADES)
+    out["one_minute_entry_delay"] = {"t_gt_2": int((tdel.t > 2).sum()), "max_t": float(tdel.t.max())}
+    # c) naive bear benchmark: short every day 09:30 -> 15:15
+    r = -disc.outcome_bps(panel, "09:30", "15:15")
+    bench = {}
+    for label, (a, b) in PERIODS.items():
+        x = r[elig & (panel.dates >= a) & (panel.dates < b)]
+        bench[label] = {"gross_bps": float(x.mean()), "t": float(x.mean() / (x.std() / np.sqrt(len(x)))),
+                        "net_bps": float(x.mean() - cost)}
+    out["short_every_day_0930_1515"] = bench
+    # d) ORB-30 with stop: full-sample gross edge, CI, by year and by VIX regime
+    hp = panel.subset(elig)
+    g = pd.Series(hypotheses.opening_range_breakout(hp, 30, 0.0, True), index=hp.dates).dropna()
+    se = g.std() / np.sqrt(len(g))
+    vix_pct = ctx["vix_pct"].reindex(g.index)
+    by_vix = {}
+    for lvl, (lo, hi) in {"low": (0, 1 / 3), "mid": (1 / 3, 2 / 3), "high": (2 / 3, 1.01)}.items():
+        for label, (a, b) in PERIODS.items():
+            x = g[(vix_pct > lo) & (vix_pct <= hi) & (g.index >= a) & (g.index < b)]
+            by_vix[f"{lvl} / {label}"] = {"n": len(x), "gross_bps": float(x.mean()),
+                                          "t": float(x.mean() / (x.std() / np.sqrt(len(x))))}
+    out["orb30_stop"] = {"n": len(g), "gross_bps": float(g.mean()), "gross_t": float(g.mean() / se),
+                         "gross_ci95": [float(g.mean() - 1.96 * se), float(g.mean() + 1.96 * se)],
+                         "net_bps": float(g.mean() - cost), "net_t": float((g.mean() - cost) / se),
+                         "gross_by_year": g.groupby(g.index.year).mean().round(2).to_dict(),
+                         "gross_by_vix_tercile": by_vix}
+    return out
+
+
 def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
     t0 = time.time()
     RESULTS.mkdir(exist_ok=True)
     cost = COST_SCENARIOS_BPS["base"]
     stress = COST_SCENARIOS_BPS["stress"]
     panel = load_minute_panel()
-    daily, vix = load_daily("nifty_50"), load_daily("india_vix")
+    # The eod2 daily file misses a few sessions (e.g. the 1 Feb 2020 Budget Saturday); fill them
+    # from the minute file so "previous close" is always the true previous session.
+    daily = patch_daily(load_daily("nifty_50"), load_minute_sessions())
+    vix = load_daily("india_vix")
     ctx = daily_context(daily, vix)
     elig = eligible_days(panel, ctx)
     is_mask = elig & (panel.dates < IS_END)
@@ -76,7 +125,7 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
     }
 
     # ---------------- 2. White's Reality Check (studentised max-t bootstrap) ----------
-    max_t_boot = disc.reality_check(c_is, table, cost, MIN_TRADES, n_boot=n_boot, seed=seed)
+    max_t_boot = disc.reality_check(c_is, MIN_TRADES, n_boot=n_boot, seed=seed)
     table["p_fwer"] = disc.fwer_pvalues(table.t.to_numpy(), max_t_boot)
     summary["reality_check"] = {"n_boot": n_boot, "max_t_boot_p50": float(np.median(max_t_boot)),
                                 "max_t_boot_p95": float(np.quantile(max_t_boot, 0.95)),
@@ -116,6 +165,9 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
     # ---------------- 4. PBO of the "pick the best backtest" process -------------------
     bs, bq, bn = disc.block_stats(c_is, table, cost, n_blocks=10)
     summary["pbo"] = pbo_cscv(bs, bq, bn, min_count=10)
+    # Costs make rank persistence partly mechanical (cost/sigma persists); report gross PBO too.
+    bs0, bq0, bn0 = disc.block_stats(c_is, table, 0.0, n_blocks=10)
+    summary["pbo"]["pbo_at_zero_cost"] = pbo_cscv(bs0, bq0, bn0, min_count=10)["pbo"]
 
     # ---------------- 5. hold-out evaluation of what discovery picked ------------------
     table = table.sort_values("t", ascending=False).reset_index(drop=True)
@@ -133,9 +185,20 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
         "naive_pct_oos_t_gt_2": float(100 * (naive.oos_t > 2).mean()),
         "top10_mean_is_net_bps": float(top10.net_bps.mean()),
         "top10_mean_oos_net_bps": float(top10.oos_net_bps.mean()),
-        "spearman_is_t_vs_oos_t_all": float(sps.spearmanr(valid.t, valid.oos_t, nan_policy="omit")[0]),
+        "spearman_is_t_vs_oos_t_net": float(sps.spearmanr(valid.t, valid.oos_t, nan_policy="omit")[0]),
         "all_candidates_pct_positive_oos": float(100 * (valid.oos_net_bps > 0).mean()),
     }
+    # Net t-stats share a persistent cost/se term, so their rank correlation is mostly mechanical.
+    # Gross t on long rows (short rows are mirrors) measures whether the *signal* persists.
+    longs = table[(table.direction == "long")].copy()
+    longs_oos = disc.evaluate_on(c_oos, longs, 0.0)
+    longs["is_gross_t"] = longs.gross_bps / (longs.sd_bps / np.sqrt(longs.n))
+    ok = longs_oos.oos_n >= 20
+    summary["hold_out"]["spearman_is_t_vs_oos_t_gross"] = float(
+        sps.spearmanr(longs.is_gross_t[ok], longs_oos.oos_t[ok], nan_policy="omit")[0])
+    top50 = table.head(50)
+    summary["hold_out"]["top50_pooled_oos_net_bps"] = float((top50.oos_net_bps * top50.oos_n).sum() / top50.oos_n.sum())
+    summary["hold_out"]["top50_pooled_oos_trades"] = int(top50.oos_n.sum())
     cols = ["pattern", "n", "gross_bps", "net_bps", "t", "win_rate", "p_bh", "p_fwer", "p_spa",
             "oos_n", "oos_net_bps", "oos_t", "oos_win_rate", "oos_net_bps_stress"]
     table.head(200)[cols].to_csv(RESULTS / "top_patterns_in_sample.csv", index=False, float_format="%.4f")
@@ -148,7 +211,9 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
     # ---------------- 6. scorecards (eval gates) --------------------------------------
     best = table.iloc[0]
     best_trades = disc.trades(c_is, best, cost)
-    var_sr = float((table.net_bps / table.sd_bps).var())
+    # Trial-to-trial SR variance from gross SR of one direction per pattern: the net SR adds a
+    # deterministic -cost/sigma offset and the long/short mirrors, which inflate V (audit B2).
+    var_sr = float((longs.gross_bps / longs.sd_bps).var())
     dsr = deflated_sharpe(best_trades, n_trials, var_sr)
     summary["best_pattern"] = {"pattern": best.pattern, **{k: float(v) if isinstance(v, (int, float, np.floating)) else v
                                                          for k, v in dsr.items()}}
@@ -179,7 +244,7 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
     for name, net in strat_net.items():
         s = pd.Series(net, index=hyp_panel.dates)
         i_s, o_s = s[s.index < IS_END].dropna(), s[s.index >= IS_END].dropna()
-        _, o_s_stress = (lambda x: (None, x[x.index >= IS_END].dropna() - (stress - cost)))(s)
+        o_s_stress = o_s - (stress - cost)
         cards.append(scorecard(name, {
             "net_positive": i_s.mean(), "t_stat": i_s.mean() / (i_s.std() / np.sqrt(len(i_s))),
             "fwer": min(1.0, len(strat_net) * sps.norm.sf(i_s.mean() / (i_s.std() / np.sqrt(len(i_s))))),
@@ -240,6 +305,12 @@ def main(n_boot: int = 500, n_placebo: int = 100, seed: int = 11) -> dict:
             tod.append({"period": label, "segment": seg, "mean_bps": r.mean(),
                         "t": r.mean() / (r.std() / np.sqrt(len(r))), "cum_pct": r.sum() / 100})
     pd.DataFrame(tod).to_csv(RESULTS / "time_of_day_drift.csv", index=False, float_format="%.3f")
+
+    # ---------------- 10. robustness checks quoted in REPORT.md ---------------------------
+    summary["robustness"] = robustness(panel, ctx, elig, daily, cost)
+    split = regime.minute_split(panel.subset(elig), daily)
+    split.to_csv(RESULTS / "overnight_vs_intraday_minute_based.csv", float_format="%.3f")
+    summary["regime"]["minute_based_2015_2024"] = split.loc["total"].to_dict()
 
     summary["runtime_sec"] = round(time.time() - t0, 1)
     (RESULTS / "summary.json").write_text(json.dumps(summary, indent=2, default=float))

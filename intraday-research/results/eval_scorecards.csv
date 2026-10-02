@@ -1,28 +1,28 @@
 candidate,gate,description,threshold,value,result
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,28.1615,PASS
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,3.2736,PASS
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,0.8762,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,0.0787,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,0.2063,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,oos_positive,Hold-out (2021-2024Q1) net mean per trade,> 0 bps,-2.4021,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,oos_t,Hold-out t-statistic,>= 1.5,-0.1731,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,decay,Hold-out / in-sample net edge,>= 0.5,-0.0853,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-4.1721,FAIL
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.7000,PASS
-Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,sample,Trades in discovery period,>= 100,63.0000,FAIL
-"Top-10 mined patterns, equal weight",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,4.9773,PASS
-"Top-10 mined patterns, equal weight",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,4.8158,PASS
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,19.1448,PASS
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,3.1216,PASS
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,0.9401,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,0.0057,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,0.2063,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,oos_positive,Hold-out (2021-2024Q1) net mean per trade,> 0 bps,-8.8528,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,oos_t,Hold-out t-statistic,>= 1.5,-1.0404,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,decay,Hold-out / in-sample net edge,>= 0.5,-0.4624,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-10.6228,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.6000,FAIL
+Best mined pattern: SHORT 09:30->15:15 if prev_clv=mid & first15=bear_strong,sample,Trades in discovery period,>= 100,162.0000,PASS
+"Top-10 mined patterns, equal weight",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,4.6980,PASS
+"Top-10 mined patterns, equal weight",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,4.7141,PASS
 "Top-10 mined patterns, equal weight",fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,,n/a
 "Top-10 mined patterns, equal weight",dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 "Top-10 mined patterns, equal weight",pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,0.2063,FAIL
-"Top-10 mined patterns, equal weight",oos_positive,Hold-out (2021-2024Q1) net mean per trade,> 0 bps,-1.0522,FAIL
-"Top-10 mined patterns, equal weight",oos_t,Hold-out t-statistic,>= 1.5,-0.9682,FAIL
-"Top-10 mined patterns, equal weight",decay,Hold-out / in-sample net edge,>= 0.5,-0.2114,FAIL
+"Top-10 mined patterns, equal weight",oos_positive,Hold-out (2021-2024Q1) net mean per trade,> 0 bps,-0.5445,FAIL
+"Top-10 mined patterns, equal weight",oos_t,Hold-out t-statistic,>= 1.5,-0.4972,FAIL
+"Top-10 mined patterns, equal weight",decay,Hold-out / in-sample net edge,>= 0.5,-0.1159,FAIL
 "Top-10 mined patterns, equal weight",stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,,n/a
 "Top-10 mined patterns, equal weight",yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.7000,PASS
-"Top-10 mined patterns, equal weight",sample,Trades in discovery period,>= 100,426.0000,PASS
-"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-6.7017,FAIL
-"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-10.8800,FAIL
+"Top-10 mined patterns, equal weight",sample,Trades in discovery period,>= 100,419.0000,PASS
+"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-6.7011,FAIL
+"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-10.8970,FAIL
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -31,9 +31,9 @@ Best mined pattern: SHORT 09:30->15:15 if prev_day=down & open_to_now=big_down,s
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-7.6480,FAIL
 "H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.0000,FAIL
-"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",sample,Trades in discovery period,>= 100,1417.0000,PASS
-H2a ORB-15 with stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-2.4729,FAIL
-H2a ORB-15 with stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-1.4193,FAIL
+"H1 intraday momentum (prev close->09:45 sign, trade 15:00->15:30)",sample,Trades in discovery period,>= 100,1426.0000,PASS
+H2a ORB-15 with stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-2.5542,FAIL
+H2a ORB-15 with stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-1.4729,FAIL
 H2a ORB-15 with stop,fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 H2a ORB-15 with stop,dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 H2a ORB-15 with stop,pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -42,9 +42,9 @@ H2a ORB-15 with stop,oos_t,Hold-out t-statistic,>= 1.5,-1.8524,FAIL
 H2a ORB-15 with stop,decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 H2a ORB-15 with stop,stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-5.2902,FAIL
 H2a ORB-15 with stop,yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.4000,FAIL
-H2a ORB-15 with stop,sample,Trades in discovery period,>= 100,1408.0000,PASS
-H2b ORB-30 with stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-1.2396,FAIL
-H2b ORB-30 with stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-0.7066,FAIL
+H2a ORB-15 with stop,sample,Trades in discovery period,>= 100,1418.0000,PASS
+H2b ORB-30 with stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-1.4079,FAIL
+H2b ORB-30 with stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-0.8068,FAIL
 H2b ORB-30 with stop,fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 H2b ORB-30 with stop,dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 H2b ORB-30 with stop,pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -53,9 +53,9 @@ H2b ORB-30 with stop,oos_t,Hold-out t-statistic,>= 1.5,-1.3525,FAIL
 H2b ORB-30 with stop,decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 H2b ORB-30 with stop,stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-4.3251,FAIL
 H2b ORB-30 with stop,yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.3000,FAIL
-H2b ORB-30 with stop,sample,Trades in discovery period,>= 100,1395.0000,PASS
-H2c ORB-15 no stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-5.8002,FAIL
-H2c ORB-15 no stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-2.4063,FAIL
+H2b ORB-30 with stop,sample,Trades in discovery period,>= 100,1405.0000,PASS
+H2c ORB-15 no stop,net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-6.0335,FAIL
+H2c ORB-15 no stop,t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-2.5099,FAIL
 H2c ORB-15 no stop,fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 H2c ORB-15 no stop,dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 H2c ORB-15 no stop,pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -64,9 +64,9 @@ H2c ORB-15 no stop,oos_t,Hold-out t-statistic,>= 1.5,-2.1217,FAIL
 H2c ORB-15 no stop,decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 H2c ORB-15 no stop,stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-6.6394,FAIL
 H2c ORB-15 no stop,yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.2000,FAIL
-H2c ORB-15 no stop,sample,Trades in discovery period,>= 100,1408.0000,PASS
-"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-9.3238,FAIL
-"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-1.7674,FAIL
+H2c ORB-15 no stop,sample,Trades in discovery period,>= 100,1418.0000,PASS
+"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-8.4713,FAIL
+"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-1.6135,FAIL
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -75,9 +75,9 @@ H2c ORB-15 no stop,sample,Trades in discovery period,>= 100,1408.0000,PASS
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-12.6430,FAIL
 "H3a gap fade |gap|>0.5 sigma, 09:20->15:15",yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.1000,FAIL
-"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",sample,Trades in discovery period,>= 100,457.0000,PASS
-"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-4.4162,FAIL
-"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-0.8371,FAIL
+"H3a gap fade |gap|>0.5 sigma, 09:20->15:15",sample,Trades in discovery period,>= 100,460.0000,PASS
+"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",net_positive,Net-of-cost mean per trade > 0 in discovery period,> 0 bps,-5.2687,FAIL
+"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",t_stat,"t-statistic of net returns (Harvey, Liu & Zhu hurdle)",>= 3.0,-1.0035,FAIL
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",fwer,Family-wise p-value over all patterns tried (Hansen SPA; Bonferroni for pre-registered),< 0.05,1.0000,FAIL
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",dsr,Deflated Sharpe Ratio given number of trials,>= 0.95,,n/a
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",pbo,Probability of Backtest Overfitting of the selection process (CSCV; authors suggest 0.05),<= 0.20,,n/a
@@ -85,5 +85,5 @@ H2c ORB-15 no stop,sample,Trades in discovery period,>= 100,1408.0000,PASS
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",oos_t,Hold-out t-statistic,>= 1.5,-0.7093,FAIL
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",decay,Hold-out / in-sample net edge,>= 0.5,,n/a
 "H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",stress_cost,Hold-out net mean at stress cost (3 pts slippage per side),> 0 bps,-4.6370,FAIL
-"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.3000,FAIL
-"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",sample,Trades in discovery period,>= 100,457.0000,PASS
+"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",yearly,Share of calendar years with positive net P&L (all data),>= 70%,0.2000,FAIL
+"H3b gap-and-go |gap|>0.5 sigma, 09:20->15:15",sample,Trades in discovery period,>= 100,460.0000,PASS

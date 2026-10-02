@@ -14,9 +14,9 @@ import pandas as pd
 # notes and were cross-checked against the eod2 daily open/close.
 EVENTS = [
     ("2019-02-26", "Balakot air strike (India-Pakistan)"),
-    ("2020-01-06", "US kills Soleimani; Iran threatens retaliation"),
+    ("2020-01-03", "US kills Soleimani (strike before the open)"),
     ("2020-01-08", "Iran missile strike on US bases in Iraq"),
-    ("2020-06-16", "Galwan clash (India-China)"),
+    ("2020-06-16", "Galwan clash (India-China; news broke intraday)"),
     ("2022-02-24", "Russia invades Ukraine"),
     ("2023-10-09", "Hamas attack on Israel"),
     ("2024-04-15", "Iran drone/missile attack on Israel"),
@@ -50,7 +50,8 @@ def yearly_profile(d: pd.DataFrame, vix: pd.DataFrame, cost_bps: float) -> pd.Da
         "days": g.size(),
         "overnight_cum_pct": 100 * g["overnight"].sum(),
         "intraday_cum_pct": 100 * g["intraday"].sum(),
-        "overnight_var_share": g.apply(lambda s: s["overnight"].var() / s["close_to_close"].var()),
+        # additive share: var(o) / (var(o) + var(i)), which stays in [0, 1] when o and i are correlated
+        "overnight_var_share": g.apply(lambda s: s["overnight"].var() / (s["overnight"].var() + s["intraday"].var())),
         "median_abs_gap_bps": 1e4 * g["overnight"].apply(lambda s: s.abs().median()),
         "median_range_bps": 1e4 * g["range"].median(),
         "median_abs_open_to_close_bps": 1e4 * g["intraday"].apply(lambda s: s.abs().median()),
@@ -88,7 +89,8 @@ def event_study(d: pd.DataFrame, vix: pd.DataFrame) -> pd.DataFrame:
 
 def gap_conditional_open_to_close(d: pd.DataFrame, periods: dict, cost_bps: float) -> pd.DataFrame:
     """Open->close drift after gaps, by era. Uses only daily data, so it can be checked on
-    Apr 2024 - Sep 2026, after the end of the minute data."""
+    Apr 2024 - Sep 2026, after the end of the minute data. Caveat: the official open is the
+    09:15 print, so this includes the untradeable first-minute move (see minute_split)."""
     sig = d["close_to_close"].rolling(20).std().shift(1)
     gz = d["overnight"] / sig
     bucket = pd.cut(gz, [-np.inf, -0.5, -0.15, 0.15, 0.5, np.inf],
@@ -105,6 +107,22 @@ def gap_conditional_open_to_close(d: pd.DataFrame, periods: dict, cost_bps: floa
                          "t": x.mean() / (x.std(ddof=1) / np.sqrt(len(x))),
                          "fade_net_bps": fade.mean() if lvl != "flat" else np.nan})
     return pd.DataFrame(rows)
+
+
+def minute_split(panel, daily: pd.DataFrame) -> pd.DataFrame:
+    """Overnight vs intraday by year from minute data, with the session measured from the
+    09:15 print (as daily data does) and from the 09:16 price (first tradeable minute)."""
+    close = daily["Close"]
+    prev = close.shift(1).reindex(panel.dates).to_numpy()
+    off = close.reindex(panel.dates).to_numpy()
+    print_ = panel.open[:, 0]
+    first = panel.close[:, 0]
+    df = pd.DataFrame({"overnight_to_print": np.log(print_ / prev), "intraday_from_print": np.log(off / print_),
+                       "overnight_to_0916": np.log(first / prev), "intraday_from_0916": np.log(off / first)},
+                      index=panel.dates).dropna()
+    yearly = 100 * df.groupby(df.index.year).sum()
+    yearly.loc["total"] = 100 * df.sum()
+    return yearly
 
 
 def nifty_sensex_correlation(nifty: pd.DataFrame, sensex_etf: pd.DataFrame) -> dict:

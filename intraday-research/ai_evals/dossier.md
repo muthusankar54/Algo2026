@@ -3,6 +3,10 @@
 This dossier is the single input given to every AI judge. It states the proposal and the
 evidence gathered, without a recommendation. Judges score it independently.
 
+*Frozen record: this is the snapshot the judges saw, before the independent code audit. Post-audit
+numbers in REPORT.md differ slightly (24,206 candidates instead of 24,488; 57 instead of 61 with
+t > 2; 2026 overnight variance share 57% instead of 66%). None of the changes alters a conclusion.*
+
 ## 1. The proposal (trader's own words, paraphrased)
 
 An Indian retail trader currently holds equities for weeks/months. Because of global
